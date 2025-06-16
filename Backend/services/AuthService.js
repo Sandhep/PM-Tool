@@ -3,6 +3,7 @@ import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import crypto from 'crypto';
 import Utils from '../utils/Utils.js';
+import MailService from './MailService.js';
 import UserRepository from '../repositories/UserRepository.js';
 import InvitationRepository from '../repositories/InvitationRepository.js';
 
@@ -25,6 +26,8 @@ class AuthService {
       email:email,
       passwordHash: hashedPassword,
     })
+
+    MailService.sendOnboardMail(email,name);
   
     return newUser; 
   }
@@ -58,16 +61,8 @@ class AuthService {
 
       const token = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hrs
-      const acceptUrl = `${process.env.FRONTEND_URL}/accept-invite?token=${token}`;
 
-      const mailObject = {
-        subject : "You've been invited to join a project",
-        receiverEmail: dataObject.email,
-        heading : "Welcome to the PM Tool",
-        message : `Click the link to accept invitation: ${acceptUrl}`
-      }
-
-      await Utils.sendEmail(mailObject);
+      await MailService.sendInviteMail(dataObject,token);
 
       const invitation = await InvitationRepository.create({
         email: dataObject.email,
@@ -83,6 +78,34 @@ class AuthService {
     } catch (error) {
       throw new Error("Invite failed: " + error.message);
     }
+  }
+
+  async acceptInvitation(dataObject){
+
+    try{
+
+      const invite = await InvitationRepository.findByStatus(dataObject.token,'Pending');
+
+      if (!invite || invite.expiresAt < new Date()) {
+        throw new Error("Invitation expired or invalid");
+      }
+
+      let user = await UserRepository.findByEmail(invite.email);
+
+      if (!user) {
+        user = await this.register({ name: dataObject.name, email: invite.email, password: dataObject.password });
+      }
+
+      // Add user to project
+      //await AuthService.addUserToProject(user._id, invite.projectId, invite.role);
+
+      await InvitationRepository.updateStatus(dataObject.token,'Accepted');
+
+      return user;
+
+    } catch(error){
+       throw new Error("Invite Accept Failed: " + error.message);
+    } 
   }
 
 }
