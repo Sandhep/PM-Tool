@@ -7,5 +7,6 @@ const router = express.Router();
 router.post('/login', AuthController.login);
 router.post('/register',AuthController.register);
 router.post('/invite-user',AuthMiddleware.authenticateToken,AuthController.inviteUser);
+router.post('/accept-invite',AuthController.acceptInvitation);
 
 export default router;

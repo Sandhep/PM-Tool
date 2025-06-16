@@ -68,10 +68,34 @@ class AuthController{
 
         res.status(200).json({ message: 'Invitation sent successfully' , invitation});
 
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+      } catch (error) {
+          res.status(500).json({ message: error.message });
+      }
     }
-  }
+    
+    async acceptInvitation(req, res) {
+
+      const { token, name, password } = req.body;
+
+      if (!token || !name || !password ) {
+        return res.status(400).json({ message: 'Missing required fields' });
+      }
+
+      try {
+
+        const dataObject = {token,name,password};
+        const user = await AuthService.acceptInvitation(dataObject);
+        res.status(201).json({ message: 'Invitation accepted', user });
+
+      } catch (error) {
+
+        if(error.message === "Invite Accept Failed: Invitation expired or invalid"){
+          res.status(400).json({ message: error.message });
+        }else{
+          res.status(500).json({ message: error.message });
+        }
+      }
+    } 
 }
 
 export default new AuthController();
