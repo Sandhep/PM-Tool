@@ -3,11 +3,11 @@ import User from "../models/User.js";
 class UserRepository {
 
   async findByEmail(email) {
-    return User.findOne({email});
+    return await User.findOne({email});
   }
 
   async findByUserId(userId) {
-    return User.findOne({ userId });
+    return await User.findOne({ userId });
   }
 
   async create(userData) {
