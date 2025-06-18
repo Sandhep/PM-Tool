@@ -2,7 +2,7 @@ import AuthService from "../services/AuthService.js";
 
 class AuthController{
 
-    async login(req, res){
+    async login(req, res, next){
 
       const { email, password } = req.body;
 
@@ -16,19 +16,12 @@ class AuthController{
         res.status(200).json(result);
      
       } catch (error) {
-
-        if(error.message === "Invalid credentials"){
-          return res.status(400).json({ message: error.message });
-        }else if(error.message === "User Not Found"){
-          return res.status(404).json({ message: error.message });
-        }else{
-          res.status(500).json({ message: error.message });
-        }
+        next(error);
       }
 
     };
 
-    async register(req,res){
+    async register(req,res,next){
 
       const { name, email, password } = req.body;
 
@@ -42,17 +35,12 @@ class AuthController{
           res.status(201).json({ message: 'User registered successfully', user: newUser });4
 
       } catch (error) {
-
-          if(error.message === "User already exists"){
-            return res.status(400).json({ message: error.message });
-          }else{
-            res.status(500).json({ message: error.message });
-          }
+          next(error);
       }
     
     }
 
-    async inviteUser(req, res) {
+    async inviteUser(req, res, next) {
   
       const { email, projectId, role } = req.body;
       const invitedBy = req.user.userId;
@@ -69,11 +57,11 @@ class AuthController{
         res.status(200).json({ message: 'Invitation sent successfully' , invitation});
 
       } catch (error) {
-          res.status(500).json({ message: error.message });
+         next(error);
       }
     }
     
-    async acceptInvitation(req, res) {
+    async acceptInvitation(req, res, next) {
 
       const { token, name, password } = req.body;
 
@@ -88,12 +76,7 @@ class AuthController{
         res.status(201).json({ message: 'Invitation accepted', user });
 
       } catch (error) {
-
-        if(error.message === "Invite Accept Failed: Invitation expired or invalid"){
-          res.status(400).json({ message: error.message });
-        }else{
-          res.status(500).json({ message: error.message });
-        }
+        next(error);
       }
     } 
 }

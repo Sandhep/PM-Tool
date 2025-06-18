@@ -6,6 +6,8 @@ import Utils from '../utils/Utils.js';
 import MailService from './MailService.js';
 import UserRepository from '../repositories/UserRepository.js';
 import InvitationRepository from '../repositories/InvitationRepository.js';
+import BadRequestException from '../exceptions/BadRequestException.js';
+import NotFoundException from '../exceptions/NotFoundException.js';
 
 dotenv.config();
 
@@ -16,7 +18,7 @@ class AuthService {
     const userExists = await UserRepository.findByEmail(email);
     
     if (userExists) {
-      throw new Error("User already exists");
+      throw new BadRequestException("User already exists");
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -37,13 +39,13 @@ class AuthService {
     const user = await UserRepository.findByEmail(email);
           
     if (!user) {
-      throw new Error("User Not Found");  
+      throw new NotFoundException("User Not Found");
     }
 
     const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
 
     if (!isPasswordValid) {
-      throw new Error("Invalid credentials");
+      throw new BadRequestException("Invalid credentials");
     }
 
     const token = jwt.sign(
@@ -56,8 +58,6 @@ class AuthService {
   }
 
   async inviteUser(dataObject){
-
-    try{
 
       const token = crypto.randomBytes(32).toString('hex');
       const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hrs
@@ -75,19 +75,14 @@ class AuthService {
 
       return invitation;
 
-    } catch (error) {
-      throw new Error("Invite failed: " + error.message);
-    }
   }
 
   async acceptInvitation(dataObject){
 
-    try{
-
       const invite = await InvitationRepository.findByStatus(dataObject.token,'Pending');
 
       if (!invite || invite.expiresAt < new Date()) {
-        throw new Error("Invitation expired or invalid");
+        throw new BadRequestException("Invitation expired or invalid");
       }
 
       let user = await UserRepository.findByEmail(invite.email);
@@ -102,10 +97,6 @@ class AuthService {
       await InvitationRepository.updateStatus(dataObject.token,'Accepted');
 
       return user;
-
-    } catch(error){
-       throw new Error("Invite Accept Failed: " + error.message);
-    } 
   }
 
 }

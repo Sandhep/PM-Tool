@@ -1,6 +1,9 @@
 import nodemailer from 'nodemailer';
 import dotenv from 'dotenv';
 import UserRepository from '../repositories/UserRepository.js';
+import InternalServerException from '../exceptions/InternalServerException.js';
+import NotFoundException from '../exceptions/NotFoundException.js';
+import BadRequestException from '../exceptions/BadRequestException.js';
 
 class MailService{
 
@@ -31,7 +34,7 @@ class MailService{
 
     } catch (error) {
 
-      throw new Error("Email sending failed: " + error.message);
+      throw new InternalServerException("Email sending failed: " + error.message);
 
     }
   }
@@ -74,6 +77,14 @@ class MailService{
 
     const acceptUrl = `${process.env.FRONTEND_URL}/accept-invite?token=${token}`;
     const invitingUser = await UserRepository.findByUserId(dataObject.invitedBy);
+
+    if(!invitingUser){
+      throw new NotFoundException("Inviting User Not Found");
+    }
+
+    if(invitingUser.email === dataObject.email){
+      throw new BadRequestException("User can't invite themselves");
+    }
 
     const message = `
     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
