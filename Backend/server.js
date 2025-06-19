@@ -4,12 +4,15 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
+import apiRateLimiter from './middleware/rateLimiter.js';
 
 dotenv.config();
 
 const app = express();
 app.use(cors());
 app.use(express.json());
+
+app.use(apiRateLimiter); // Applying Rate Limit to all Routes 
 
 app.use('/auth',authRoutes);
 app.use(errorHandler);
