@@ -1,12 +1,10 @@
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
-import crypto from 'crypto';
 
 import Utils from '../utils/Utils.js';
 import MailService from './MailService.js';
 import UserRepository from '../repositories/UserRepository.js';
-import InvitationRepository from '../repositories/InvitationRepository.js';
 
 import BadRequestException from '../exceptions/BadRequestException.js';
 import NotFoundException from '../exceptions/NotFoundException.js';
@@ -56,48 +54,46 @@ class AuthService {
     return { message: 'Login successful', token };
   }
 
-  async inviteUser(inviteUserDTO) {
-    const token = crypto.randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hrs
+  async requestOtp({ email }) {
 
-    await MailService.sendInviteMail(inviteUserDTO, token);
-
-    const invitation = await InvitationRepository.create({
-      email: inviteUserDTO.email,
-      projectId: inviteUserDTO.projectId,
-      invitedBy: inviteUserDTO.invitedBy,
-      token,
-      role: inviteUserDTO.role,
-      expiresAt,
-    });
-
-    return invitation;
-  }
-
-  async acceptInvitation(acceptInviteDTO) {
-    const invite = await InvitationRepository.findByStatus(acceptInviteDTO.token, 'Pending');
-
-    if (!invite || invite.expiresAt < new Date()) {
-      throw new BadRequestException("Invitation expired or invalid");
-    }
-
-    let user = await UserRepository.findByEmail(invite.email);
-
+    const user = await UserRepository.findByEmail(email);
     if (!user) {
-      user = await this.register({
-        name: acceptInviteDTO.name,
-        email: invite.email,
-        password: acceptInviteDTO.password
-      });
+      throw new NotFoundException("User not found");
     }
 
-    // TODO: Add user to project
-    // await ProjectService.addUserToProject(user._id, invite.projectId, invite.role);
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 5 * 60 * 1000); // 5 min
 
-    await InvitationRepository.updateStatus(acceptInviteDTO.token, 'Accepted');
+    user.resetOtp = otp;
+    user.resetOtpExpiresAt = expiry;
+    await user.save();
 
-    return user;
+    await MailService.sendOTPMail(email,otp);
+
+    return { message: "OTP sent to your email" };
+
   }
+
+  async resetPasswordWithOtp({ email, otp, password }) {
+
+    const user = await UserRepository.findByEmail(email);
+
+    if (!user || user.resetOtp !== otp || user.resetOtpExpiresAt < new Date()) {
+      throw new BadRequestException("Invalid or expired OTP");
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    user.passwordHash = hashedPassword;
+    user.resetOtp = null;
+    user.resetOtpExpiresAt = null;
+
+    await user.save();
+
+    return { message: "Password reset successful" };
+  
+  }
+
+
 }
 
 export default new AuthService();

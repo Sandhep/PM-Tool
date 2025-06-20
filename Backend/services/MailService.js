@@ -45,7 +45,7 @@ class MailService{
 
     const message = `
       <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-        <h2 style="color: #2c3e50;">Hello ${name}, welcome to <span style="color: #3498db;">PM Tool</span>!</h2>
+        <h2 style="color: #2c3e50;">Hello ${name}, welcome to <span style="color: #3498db;">PM Tool</span> !</h2>
 
         <p>We're excited to have you join our community. ${process.env.APP_NAME} is built to help teams collaborate, plan, and deliver projects efficiently.</p>
 
@@ -88,7 +88,7 @@ class MailService{
 
     const message = `
     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-        <h2 style="color: #2c3e50;">You've been invited to join a project on <span style="color: #3498db;">${process.env.APP_NAME}</span>!</h2>
+        <h2 style="color: #2c3e50;">You've been invited to join a project on <span style="color: #3498db;">${process.env.APP_NAME}</span> !</h2>
 
         <p>Hello,</p>
 
@@ -125,6 +125,43 @@ class MailService{
     };
 
     this.sendEmail(mailObject);
+
+  }
+
+  async sendOTPMail(receiverEmail,otp){
+
+    const message = `
+        <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
+          <h2 style="color: #2c3e50;">Password Reset Request</h2>
+
+          <p>Hello,</p>
+
+          <p>We received a request to reset your password for your <strong>${process.env.APP_NAME}</strong> account. Use the following One-Time Password (OTP) to proceed:</p>
+
+          <p style="text-align: center; font-size: 24px; font-weight: bold; background: #f2f2f2; padding: 15px; border-radius: 8px; display: inline-block; margin: 20px 0;">
+            ${otp}
+          </p>
+
+          <p>This OTP is valid for <strong>5 minutes</strong>. If you didn't request a password reset, please ignore this email. Your account remains secure.</p>
+
+          <p>If you have any questions, feel free to reach out to our support team.</p>
+
+          <p>Warm regards,<br/>
+          <strong>The ${process.env.APP_NAME} Team</strong></p>
+
+          <hr style="margin-top: 30px;"/>
+
+          <small style="color: #999;">This email was sent to ${receiverEmail}. If you did not request a password reset, no further action is required.</small>
+        </div>
+      `;
+
+      const mailObject = {
+        subject: `${process.env.APP_NAME} - Password Reset OTP Request`,
+        receiverEmail,
+        message
+      };
+
+      this.sendEmail(mailObject);
 
   }
 
