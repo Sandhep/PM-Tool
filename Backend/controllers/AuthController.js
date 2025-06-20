@@ -1,8 +1,8 @@
 import AuthService from "../services/AuthService.js";
 import LoginUserDTO from "../dtos/LoginUserDTO.js";
 import RegisterUserDTO from "../dtos/RegisterUserDTO.js";
-import InviteUserDTO from "../dtos/InviteUserDTO.js";
-import AcceptInviteDTO from "../dtos/AcceptInviteDTO.js";
+import RequestOtpDTO from "../dtos/RequestOtpDTO.js";
+import VerifyOtpDTO from "../dtos/VerifyOtpDTO.js";
 
 class AuthController {
 
@@ -26,26 +26,27 @@ class AuthController {
     }
   }
 
-  async inviteUser(req, res, next) {
+  async requestOtp(req, res, next) {
     try {
-      const data = { ...req.body, invitedBy: req.user.userId };
-      const dto = new InviteUserDTO(data);
-      const invitation = await AuthService.inviteUser(dto);
-      res.status(200).json({ message: 'Invitation sent successfully', invitation });
-    } catch (error) {
-      next(error);
+      const dto = new RequestOtpDTO(req.body);
+      const result = await AuthService.requestOtp(dto);
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
     }
   }
 
-  async acceptInvitation(req, res, next) {
+  async resetPasswordWithOtp(req, res, next) {
     try {
-      const dto = new AcceptInviteDTO(req.body);
-      const user = await AuthService.acceptInvitation(dto);
-      res.status(201).json({ message: 'Invitation accepted', user });
-    } catch (error) {
-      next(error);
+      const dto = new VerifyOtpDTO(req.body);
+      const result = await AuthService.resetPasswordWithOtp(dto);
+      res.status(202).json(result);
+    } catch (err) {
+      next(err);
     }
   }
+
+
 }
 
 export default new AuthController();
