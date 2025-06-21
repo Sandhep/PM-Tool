@@ -16,7 +16,7 @@ app.use(express.json());
 app.use(apiRateLimiter); // Applying Rate Limit to all Routes 
 
 app.use('/auth',authRoutes);
-app.use('/api',userRoutes);
+app.use('/api/user',userRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
