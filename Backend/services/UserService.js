@@ -30,8 +30,14 @@ class UserService{
 
         const invite = await InvitationRepository.findByStatus(acceptInviteDTO.token, 'Pending');
     
-        if (!invite || invite.expiresAt < new Date()) {
-          throw new BadRequestException("Invitation expired or invalid");
+        if (!invite) {
+          throw new BadRequestException("Invitation invalid");
+        }
+
+        if(invite.expiresAt < new Date()){
+          invite.status = 'Expired';
+          invite.save();
+          throw new BadRequestException("Invitation Expired");
         }
     
         let user = await UserRepository.findByEmail(invite.email);
@@ -51,6 +57,23 @@ class UserService{
     
         return user;
     }
+
+    async getSentInvitations(userId, filters) {
+        return await InvitationRepository.findFilteredInvitations({
+          invitedBy: userId,
+          ...filters
+        });
+    }
+
+    async removeInvitation(invitationId, invitedBy) {
+      const deleted = await InvitationRepository.deleteById(invitationId, invitedBy);
+      if (!deleted) {
+        throw new BadRequestException("Invalid or unauthorized invitation removal");
+      }
+      return { message: "Invitation removed successfully" };
+    }
+
+
 
 }
 
