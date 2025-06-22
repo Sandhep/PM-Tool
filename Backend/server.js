@@ -4,6 +4,8 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import projectRoutes from './routes/projectRoutes.js';
+import projectMemberRoutes from './routes/projectMemberRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
 import apiRateLimiter from './middleware/rateLimiter.js';
 
@@ -16,7 +18,9 @@ app.use(express.json());
 app.use(apiRateLimiter); // Applying Rate Limit to all Routes 
 
 app.use('/auth',authRoutes);
-app.use('/api/user',userRoutes);
+app.use('/user',userRoutes);
+app.use('/project', projectRoutes);
+app.use('/project/member',projectMemberRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
