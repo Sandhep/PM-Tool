@@ -40,7 +40,7 @@ class AuthController {
     try {
       const dto = new VerifyOtpDTO(req.body);
       const result = await AuthService.resetPasswordWithOtp(dto);
-      res.status(202).json(result);
+      res.status(200).json(result);
     } catch (err) {
       next(err);
     }
