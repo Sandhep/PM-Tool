@@ -9,6 +9,10 @@ class ProjectRepository {
     return Project.findOne({ projectId });
   }
 
+  async findByIds(projectIds) {
+    return await Project.find({ projectId: { $in: projectIds } });
+  }
+
   async findByUser(userId) {
     return Project.find({ createdBy: userId }).sort({ createdAt: -1 });
   }
