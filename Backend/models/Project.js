@@ -10,7 +10,8 @@ const projectSchema = new mongoose.Schema({
     enum: ['Not Started', 'In Progress', 'Completed'],
     default: 'Not Started',
   },
-  createdBy: { type: String, ref: 'User', required: true },
+  ownerId: { type: String, ref: 'User', required: true },
+  parentProjectId : {type: String , ref : 'Project'},
 }, { timestamps: true });
 
 export default mongoose.model('Project', projectSchema);
