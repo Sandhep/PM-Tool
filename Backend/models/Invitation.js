@@ -6,6 +6,7 @@ const invitationSchema = new mongoose.Schema({
   email: { type: String, required: true },
   projectId: { type: String, required: true },
   invitedBy: { type: String, ref: 'User', required: true },
+  scope: { type: String, enum: ['Full', 'Restricted', 'ReadOnly'], default: 'Full', },
   role: { type: String, default: 'Developer' },
   token: { type: String, required: true },
   status: { type: String, enum: ['Pending', 'Accepted', 'Expired'], default: 'Pending' },
