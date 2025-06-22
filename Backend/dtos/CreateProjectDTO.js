@@ -8,8 +8,13 @@ export default class CreateProjectDTO {
       throw new BadRequestException('Project name is required and must be a string');
     }
 
+    if (!data.ownerId || typeof data.ownerId !== 'string') {
+      throw new BadRequestException('Owner ID is required');
+    }
+
+    this.ownerId = data.ownerId;
+    this.parentProjectId = data.parentProjectId || null;
     this.name = data.name;
     this.description = data.description || '';
-    this.createdBy = data.createdBy;
   }
 }
