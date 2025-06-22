@@ -1,6 +1,7 @@
 import crypto from 'crypto';
 import BadRequestException from '../exceptions/BadRequestException.js';
 import MailService from './MailService.js';
+import ProjectMemberService from './ProjectMemberService.js';
 import UserRepository from '../repositories/UserRepository.js';
 import InvitationRepository from '../repositories/InvitationRepository.js';
 import AuthService from './AuthService.js';
@@ -20,6 +21,7 @@ class UserService{
           invitedBy: inviteUserDTO.invitedBy,
           token,
           role: inviteUserDTO.role,
+          scope: inviteUserDTO.scope,
           expiresAt,
         });
     
@@ -50,8 +52,7 @@ class UserService{
           });
         }
     
-        // TODO: Add user to project
-        // await ProjectService.addUserToProject(user._id, invite.projectId, invite.role);
+        await ProjectMemberService.addUserToProject(invite.invitedBy, user.userId, invite.projectId, invite.role, invite.scope);
     
         await InvitationRepository.updateStatus(acceptInviteDTO.token, 'Accepted');
     
