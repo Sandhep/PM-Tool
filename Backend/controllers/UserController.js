@@ -5,6 +5,13 @@ import FilterInvitationsDTO from "../dtos/FilterInvitationsDTO.js";
 
 class UserController{
 
+    constructor(){
+      this.inviteUser = this.inviteUser.bind(this);
+      this.acceptInvitation = this.acceptInvitation.bind(this);
+      this.getSentInvitations = this.getSentInvitations.bind(this);
+      this.removeInvitation = this.removeInvitation.bind(this);
+    }
+
     async inviteUser(req, res, next) {
         try {
           const data = { ...req.body, invitedBy: req.user.userId };

@@ -5,10 +5,27 @@ import ProjectMemberService from './ProjectMemberService.js';
 import UserRepository from '../repositories/UserRepository.js';
 import InvitationRepository from '../repositories/InvitationRepository.js';
 import AuthService from './AuthService.js';
+import ProjectMemberRepository from '../repositories/ProjectMemberRepository.js';
+import ConflictException from '../exceptions/ConflictException.js';
+import WorkspaceMemberRepository from '../repositories/WorkspaceMemberRepository.js';
+import WorkSpaceService from './WorkSpaceService.js';
 
 class UserService{
 
+    constructor(){
+      this.inviteUser = this.inviteUser.bind(this);
+      this.acceptInvitation = this.acceptInvitation.bind(this);
+      this.getSentInvitations = this.getSentInvitations.bind(this);
+      this.removeInvitation = this.removeInvitation.bind(this);
+    }
+
     async inviteUser(inviteUserDTO) {
+
+        const user = await WorkspaceMemberRepository.findByWorkspaceAndEmail(inviteUserDTO.workspaceId,inviteUserDTO.email);
+
+        if(user){
+           throw new ConflictException("User is already a member of the Workspace");
+        }
 
         const token = crypto.randomBytes(32).toString('hex');
         const expiresAt = new Date(Date.now() + 1000 * 60 * 60 * 24); // 24 hrs
@@ -17,11 +34,9 @@ class UserService{
     
         const invitation = await InvitationRepository.create({
           email: inviteUserDTO.email,
-          projectId: inviteUserDTO.projectId,
+          workspaceId: inviteUserDTO.workspaceId,
           invitedBy: inviteUserDTO.invitedBy,
           token,
-          role: inviteUserDTO.role,
-          scope: inviteUserDTO.scope,
           expiresAt,
         });
     
@@ -52,7 +67,7 @@ class UserService{
           });
         }
     
-        await ProjectMemberService.addUserToProject(invite.invitedBy, user.userId, invite.projectId, invite.role, invite.scope);
+        await WorkSpaceService.addMember(invite.workspaceId, user.userId, invite.role, invite.invitedBy);
     
         await InvitationRepository.updateStatus(acceptInviteDTO.token, 'Accepted');
     
