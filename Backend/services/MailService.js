@@ -7,6 +7,12 @@ import BadRequestException from '../exceptions/BadRequestException.js';
 
 class MailService{
 
+  constructor(){
+    this.sendInviteMail = this.sendInviteMail.bind(this);
+    this.sendOTPMail = this.sendOTPMail.bind(this);
+    this.sendOTPMail = this.sendOTPMail.bind(this);
+  }
+
     async sendEmail(mailObject) {
 
     dotenv.config();
@@ -88,11 +94,11 @@ class MailService{
 
     const message = `
     <div style="font-family: Arial, sans-serif; color: #333; line-height: 1.6;">
-        <h2 style="color: #2c3e50;">You've been invited to join a project on <span style="color: #3498db;">${process.env.APP_NAME}</span> !</h2>
+        <h2 style="color: #2c3e50;">You've been invited to join a Workspace on <span style="color: #3498db;">${process.env.APP_NAME}</span> !</h2>
 
         <p>Hello,</p>
 
-        <p><strong>${invitingUser.name || "A team member"}</strong> has invited you to collaborate on a project as a <strong>${dataObject.role}</strong>.</p>
+        <p><strong>${invitingUser.name || "A team member"}</strong> has invited you to join a workspace as a <strong>${dataObject.role || "Member"}</strong>.</p>
 
         <p>To accept this invitation and get started, please click the button below:</p>
 
