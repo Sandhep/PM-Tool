@@ -5,6 +5,13 @@ import DeleteProjectDTO from '../dtos/DeleteProjectDTO.js';
 
 class ProjectController {
 
+  constructor(){
+    this.create = this.create.bind(this);
+    this.deleteProject = this.deleteProject.bind(this);
+    this.getMyProjects = this.getMyProjects.bind(this);
+    this.updateProject = this.updateProject.bind(this);
+  }
+
   async create(req, res, next) {
     try {
       const dto = new CreateProjectDTO({ ...req.body, ownerId: req.user.userId });
@@ -17,7 +24,28 @@ class ProjectController {
 
   async getMyProjects(req, res, next) {
     try {
-      const projects = await ProjectService.getMyProjects(req.user.userId);
+      const workspaceId = req.query.workspaceId;
+      const projects = await ProjectService.getMyProjects(req.user.userId,workspaceId);
+      res.status(200).json({ projects });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getProject(req,res,next){
+    try{
+      const projectId = req.params.projectId;
+      const project = await ProjectService.getProjectDetails(req.user.userId,projectId);
+      res.status(200).json({project});
+    }catch(err){
+      next(err);
+    }
+  }
+
+  async getChildProjects(req, res, next){
+    try {
+      const parentProjectId = req.params.parentProjectId;
+      const projects = await ProjectService.getChildProjects(req.user.userId,parentProjectId);
       res.status(200).json({ projects });
     } catch (err) {
       next(err);

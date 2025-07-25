@@ -10,8 +10,14 @@ const projectSchema = new mongoose.Schema({
     enum: ['Not Started', 'In Progress', 'Completed'],
     default: 'Not Started',
   },
+  visibility: {
+    type: String,
+    enum: ['Private', 'Workspace'],
+    default: 'Private',
+  },
+  workspaceId: { type: String, ref: 'Workspace', required: true },
   ownerId: { type: String, ref: 'User', required: true },
-  parentProjectId : {type: String , ref : 'Project'},
+  parentProjectId: { type: String, ref: 'Project', default: null },
 }, { timestamps: true });
 
 export default mongoose.model('Project', projectSchema);
