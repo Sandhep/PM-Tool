@@ -4,6 +4,12 @@ import UnauthorizedException from '../exceptions/UnauthorizedException.js';
 import ForbiddenException from '../exceptions/ForbiddenException.js';
 
 class AuthMiddleware {
+
+  constructor(){
+    this.authenticateSocketToken = this.authenticateSocketToken.bind(this);
+    this.authenticateToken = this.authenticateToken.bind(this);
+  }
+
   authenticateToken(req, res, next) {
     try {
       const token = req.headers['authorization']?.split(' ')[1];

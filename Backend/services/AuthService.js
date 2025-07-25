@@ -13,6 +13,13 @@ dotenv.config();
 
 class AuthService {
 
+  constructor(){
+    this.register = this.register.bind(this);
+    this.login = this.login.bind(this);
+    this.requestOtp = this.requestOtp.bind(this);
+    this.resetPasswordWithOtp = this.resetPasswordWithOtp.bind(this);
+  }
+
   async register(registerUserDTO) {
     const userExists = await UserRepository.findByEmail(registerUserDTO.email);
 
@@ -46,7 +53,7 @@ class AuthService {
     }
 
     const token = jwt.sign(
-      { userId: user.userId, email: user.email, role: user.role[0] },
+      { userId: user.userId, email: user.email},
       process.env.JWT_ACCESS_SECRET,
       { expiresIn: '7d' }
     );

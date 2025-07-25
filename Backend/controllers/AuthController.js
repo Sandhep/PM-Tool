@@ -6,6 +6,13 @@ import VerifyOtpDTO from "../dtos/VerifyOtpDTO.js";
 
 class AuthController {
 
+  constructor(){
+    this.login = this.login.bind(this);
+    this.register = this.register.bind(this);
+    this.requestOtp = this.requestOtp.bind(this);
+    this.resetPasswordWithOtp = this.resetPasswordWithOtp.bind(this);
+  }
+
   async login(req, res, next) {
     try {
       const dto = new LoginUserDTO(req.body);
