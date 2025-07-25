@@ -14,6 +14,8 @@ export default class CreateProjectDTO {
 
     this.ownerId = data.ownerId;
     this.parentProjectId = data.parentProjectId || null;
+    this.workspaceId = data.workspaceId || null;
+    this.visibility = data.visibility || 'Private';
     this.name = data.name;
     this.description = data.description || '';
   }

@@ -1,6 +1,6 @@
 import BadRequestException from '../exceptions/BadRequestException.js';
 
-export default class AddWorkspaceMemberDTO {
+export default class AddProjectMemberDTO {
 
   constructor(data) {
     
@@ -8,13 +8,13 @@ export default class AddWorkspaceMemberDTO {
       throw new BadRequestException('userId is required and must be string');
     }
 
-    if (!data.workspaceId || typeof data.workspaceId !== 'string') {
+    if (!data.projectId || typeof data.projectId !== 'string') {
       throw new BadRequestException('workspaceId is required');
     }
 
-    this.workspaceId = data.workspaceId;
+    this.projectId = data.projectId;
     this.userId = data.userId;
     this.role = data.role || '';
-    this.addedby = data.addedby;
+    this.addedBy = data.addedBy;
   }
 }

@@ -4,7 +4,7 @@ import Utils from "../utils/Utils.js";
 
 export default class InviteUserDTO {
   constructor(data) {
-    const { email, projectId, role, scope, invitedBy } = data;
+    const { email, workspaceId, invitedBy } = data;
 
     if (!email || typeof email !== 'string') {
       throw new BadRequestException("Email is required and must be a string");
@@ -14,26 +14,16 @@ export default class InviteUserDTO {
       throw new BadRequestException("Invalid email format");
     }
 
-    if (!projectId || typeof projectId !== 'string') {
-      throw new BadRequestException("Project ID is required and must be a string");
-    }
-
-    if (!role || typeof role !== 'string') {
-      throw new BadRequestException("Role is required and must be a string");
+    if (!workspaceId || typeof workspaceId !== 'string') {
+      throw new BadRequestException("Workspace ID is required and must be a string");
     }
 
     if (!invitedBy || typeof invitedBy !== 'string') {
       throw new BadRequestException("Inviting user is missing");
     }
 
-    if (!['Full', 'Restricted', 'ReadOnly'].includes(scope)) {
-      throw new BadRequestException('Invalid scope value');
-    }
-
     this.email = email;
-    this.projectId = projectId;
-    this.role = role;
-    this.scope = scope;
+    this.workspaceId = workspaceId;
     this.invitedBy = invitedBy;
   }
 }
