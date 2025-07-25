@@ -7,6 +7,7 @@ import userRoutes from './routes/userRoutes.js';
 import projectRoutes from './routes/projectRoutes.js';
 import projectMemberRoutes from './routes/projectMemberRoutes.js';
 import workspaceRoutes from './routes/workspaceRoutes.js';
+import taskRoutes from './routes/taskRoutes.js';
 import errorHandler from './middleware/errorHandler.js';
 import apiRateLimiter from './middleware/rateLimiter.js';
 
@@ -23,6 +24,7 @@ app.use('/user',userRoutes);
 app.use('/project', projectRoutes);
 app.use('/project/member',projectMemberRoutes);
 app.use('/workspace',workspaceRoutes);
+app.use('/task',taskRoutes);
 app.use(errorHandler);
 
 const PORT = process.env.PORT || 5000;
