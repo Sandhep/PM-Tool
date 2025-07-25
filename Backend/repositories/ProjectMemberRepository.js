@@ -9,6 +9,10 @@ class ProjectMemberRepository {
     return ProjectMember.findOne({ projectId, userId });
   }
 
+  async findByProjectAndEmail(projectId, emailId) {
+    return ProjectMember.findOne({ projectId, emailId });
+  }
+
   async findAllByProject(projectId) {
     return ProjectMember.find({ projectId });
   }
@@ -17,10 +21,10 @@ class ProjectMemberRepository {
     return ProjectMember.find({ userId });
   }
 
-  async updateScope(projectId, userId, scope) {
+  async updateRole(projectId, userId, role) {
     return ProjectMember.findOneAndUpdate(
       { projectId, userId },
-      { scope },
+      { role },
       { new: true }
     );
   }

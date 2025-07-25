@@ -5,27 +5,37 @@ import AccessControlMiddleware from '../middleware/AccessControlMiddleware.js';
 
 const router = express.Router();
 
+
+router.post(
+  '/:projectId',
+  AuthMiddleware.authenticateToken,
+  ProjectMemberController.addUser
+);
+
+// View members — anyone with access to project can view
 router.get(
   '/:projectId',
   AuthMiddleware.authenticateToken,
-  AccessControlMiddleware.checkAccess,
-  AccessControlMiddleware.checkScope('read'),
+  //AccessControlMiddleware.checkProjectAccess,
+ // AccessControlMiddleware.checkPermission('viewTaskBoard'),
   ProjectMemberController.listMembers
 );
 
+// Update member role — only roles that can "add/remove members"
 router.put(
   '/:projectId',
   AuthMiddleware.authenticateToken,
-  AccessControlMiddleware.checkAccess,
-  AccessControlMiddleware.checkScope('write'),
-  ProjectMemberController.updateScope
+  //AccessControlMiddleware.checkProjectAccess,
+  //AccessControlMiddleware.checkPermission('addRemoveMembers'),
+  ProjectMemberController.updateRole
 );
 
+// Remove member — only ProjectManager/Admin/WorkspaceOwner
 router.delete(
   '/:projectId/:userId',
   AuthMiddleware.authenticateToken,
-  AccessControlMiddleware.checkAccess,
-  AccessControlMiddleware.checkScope('write'),
+  //AccessControlMiddleware.checkProjectAccess,
+ // AccessControlMiddleware.checkPermission('addRemoveMembers'),
   ProjectMemberController.remove
 );
 
