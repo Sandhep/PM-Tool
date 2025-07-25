@@ -1,6 +1,10 @@
 
 class Utils {
 
+  constructor(){
+    this.isValidEmail = this.isValidEmail.bind(this);
+  }
+
    isValidEmail(email) {
     if (!email || typeof email !== 'string') return false;
 
