@@ -2,8 +2,11 @@ import express from 'express';
 import WorkspaceController from '../controllers/WorkspaceController.js';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import AccessControlMiddleware from '../middleware/AccessControlMiddleware.js';
+import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
 
 const router = express.Router();
+
+router.use(contentTypeMiddleware.allow(['application/json']));
 
 // Workspace CRUD
 router.post(

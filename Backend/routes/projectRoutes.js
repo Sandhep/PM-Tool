@@ -2,8 +2,11 @@ import express from 'express';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import ProjectController from '../controllers/ProjectController.js';
 import AccessControlMiddleware from '../middleware/AccessControlMiddleware.js';
+import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
 
 const router = express.Router();
+
+router.use(contentTypeMiddleware.allow(['application/json']));
 
 // Create project - requires workspace-level access
 router.post(

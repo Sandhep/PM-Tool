@@ -2,9 +2,12 @@
 import express from 'express';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import TaskController from '../controllers/TaskController.js';
+import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
 //import AccessControlMiddleware from '../middleware/AccessControlMiddleware.js';
 
 const router = express.Router();
+
+router.use(contentTypeMiddleware.allow(['application/json']));
 
 router.post(
   '/:projectId',

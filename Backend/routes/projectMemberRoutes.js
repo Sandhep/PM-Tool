@@ -2,9 +2,11 @@ import express from 'express';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import ProjectMemberController from '../controllers/ProjectMemberController.js';
 import AccessControlMiddleware from '../middleware/AccessControlMiddleware.js';
+import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
 
 const router = express.Router();
 
+router.use(contentTypeMiddleware.allow(['application/json']));
 
 router.post(
   '/:projectId',
