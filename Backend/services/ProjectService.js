@@ -130,13 +130,8 @@ class ProjectService {
   }
 
   async getProjectDetails(userId,projectId){
- 
-    // fetch task details (taskId, name , description)
-    // fetch child project details (projectId, name, description)
 
     const projectDetails = await ProjectRepository.findById(projectId);
-
-    const tasks = [];
 
     const projects = await this.getChildProjects(userId,projectId);
     
@@ -157,7 +152,6 @@ class ProjectService {
        description:projectDetails.description,
        status:projectDetails.status,
        visibility:projectDetails.visibility,
-       tasks,
        childProjects
     }
 
