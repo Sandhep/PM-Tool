@@ -1,12 +1,17 @@
 import Task from '../models/Task.js';
 
 class TaskRepository {
+
   async create(taskData) {
     return new Task(taskData).save();
   }
 
   async findById(taskId) {
     return Task.findOne({ taskId });
+  }
+
+  async findByName(name){
+    return Task.findOne({name});
   }
 
   async findAllByProject(projectId) {

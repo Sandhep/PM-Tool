@@ -20,8 +20,8 @@ const taskSchema = new mongoose.Schema({
   eta: { type: Number },
   projectId: { type: String, ref: 'Project', required: true },
   assignerId: { type: String, ref: 'User', required: true },
-  assigneeId: { type: String, ref: 'User', required: true },
-  dependentTaskId: { type: String, ref: 'Task', default: null }, 
+  assigneeId: { type: String, ref: 'User', default: null },
+  parentTaskId: {type: String, ref: 'Task', default: null} 
 }, { timestamps: true });
 
 export default mongoose.model('Task', taskSchema);

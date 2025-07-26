@@ -1,4 +1,3 @@
-// routes/taskRoutes.js
 import express from 'express';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import TaskController from '../controllers/TaskController.js';
@@ -10,7 +9,7 @@ const router = express.Router();
 router.use(contentTypeMiddleware.allow(['application/json']));
 
 router.post(
-  '/:projectId',
+  '/',
   AuthMiddleware.authenticateToken,
   //AccessControlMiddleware.checkAccess,
   //AccessControlMiddleware.checkScope('edit'),
@@ -18,14 +17,21 @@ router.post(
 );
 
 router.get(
-  '/:projectId',
+  '/',
   //AuthMiddleware.authenticateToken,
   //AccessControlMiddleware.checkAccess,
+  AuthMiddleware.authenticateToken,
   TaskController.list
 );
 
+router.get(
+  '/:taskId',
+  AuthMiddleware.authenticateToken,
+  TaskController.fetch
+);
+
 router.put(
-  '/:projectId/:taskId',
+  '/:taskId',
   AuthMiddleware.authenticateToken,
   //AccessControlMiddleware.checkAccess,
   //AccessControlMiddleware.checkScope('edit'),
@@ -33,7 +39,7 @@ router.put(
 );
 
 router.delete(
-  '/:projectId/:taskId',
+  '/:taskId',
   AuthMiddleware.authenticateToken,
   //AccessControlMiddleware.checkAccess,
   //AccessControlMiddleware.checkScope('full'),
