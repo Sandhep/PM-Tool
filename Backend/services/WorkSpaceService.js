@@ -45,7 +45,7 @@ class WorkspaceService {
 
   async updateWorkspace(dto) {
 
-    const {workspaceId, updates} = dto;
+    const {workspaceId} = dto;
 
     const workspace = await WorkspaceRepository.findById(workspaceId);
 
@@ -53,7 +53,7 @@ class WorkspaceService {
       throw new NotFoundException('Workspace Not Found');
     }
 
-    return WorkspaceRepository.update(workspaceId, updates);
+    return await WorkspaceRepository.update(dto);
   }
 
   async deleteWorkspace(workspaceId) {

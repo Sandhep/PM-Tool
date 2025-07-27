@@ -40,6 +40,7 @@ class WorkspaceController {
   async update(req, res, next) {
     try {
       const dto = new UpdateWorkspaceDTO({...req.body,workspaceId:req.params.workspaceId})
+      console.log(dto);
       const updated = await WorkspaceService.updateWorkspace(dto);
       res.status(200).json({ message: 'Workspace updated', workspace: updated });
     } catch (err) {
