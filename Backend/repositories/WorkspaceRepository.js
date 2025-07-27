@@ -17,8 +17,9 @@ class WorkspaceRepository {
     return WorkspaceModel.find({ ownerId: userId });
   }
 
-  async update(workspaceId, updates) {
-    return WorkspaceModel.findOneAndUpdate({ workspaceId }, updates, { new: true });
+  async update(dto) {
+    const {workspaceId, name, description} = dto;
+    return WorkspaceModel.findOneAndUpdate({ workspaceId },{name, description}, { new: true });
   }
 
   async delete(workspaceId) {
