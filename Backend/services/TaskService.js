@@ -58,15 +58,15 @@ class TaskService {
 
     const tasks =  await TaskRepository.findAllByProject(projectId);
     
-    if(view === 'my-task'){
+    if(view === 'my-tasks'){
       const userTasks = tasks.filter(task => task.assignerId === userId || task.assigneeId === userId);
       return userTasks;
-    }else if(view === 'all-task'){
+    }else if(view === 'all-tasks'){
       return tasks;
     }else{
       throw new BadRequestException('Invalid query value');
     }
-    
+
   }
 
   async fetchTask(taskId){
