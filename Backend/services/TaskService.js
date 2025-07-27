@@ -54,25 +54,66 @@ class TaskService {
 
   }
 
-  async listTasks(projectId,userId) {
+  async listTasks(projectId,userId,view) {
 
     const tasks =  await TaskRepository.findAllByProject(projectId);
     
-    let userTasks = [];
-
-    userTasks = tasks.filter(task => task.assignerId === userId || task.assigneeId === userId);
-
-    return userTasks;
+    if(view === 'my-task'){
+      const userTasks = tasks.filter(task => task.assignerId === userId || task.assigneeId === userId);
+      return userTasks;
+    }else if(view === 'all-task'){
+      return tasks;
+    }else{
+      throw new BadRequestException('Invalid query value');
+    }
+    
   }
 
   async fetchTask(taskId){
 
     const task = await TaskRepository.findById(taskId);
+
     if(!task){
        throw new NotFoundException('Task not found');
     }
-    return task;
 
+    const tasks = await TaskRepository.findbyParentTask(taskId);
+
+    let childTasks = [];
+
+    tasks.forEach(childTask =>{
+       const node = {
+        taskId: childTask.taskId,
+        name: childTask.name,
+        description: childTask.description,
+        status: childTask.status,
+        priority: childTask.priority,
+        assigneeId: childTask.assigneeId,
+        assignerId: childTask.assignerId,
+        parentTaskId: childTask.parentTaskId,
+       }
+       childTasks.push(node);
+    })
+
+    const response = {
+      taskId: task.taskId,
+      name: task.name,
+      description: task.description,
+      status: task.status,
+      priority: task.priority,
+      startDate: task.startDate,
+      endDate: task.endDate,
+      eta: task.eta,
+      projectId: task.projectId,
+      assignerId: task.assignerId,
+      assigneeId: task.assigneeId,
+      parentTaskId: task.parentTaskId,
+      createdAt: task.createdAt,
+      updatedAt: task.updatedAt,
+      childTasks,
+    }
+
+    return response;
   }
   
 }

@@ -2,6 +2,7 @@ import ProjectRepository from '../repositories/ProjectRepository.js';
 import ProjectMemberRepository from '../repositories/ProjectMemberRepository.js';
 import ProjectMemberService from './ProjectMemberService.js';
 import NotFoundException from '../exceptions/NotFoundException.js';
+import BadRequestException from '../exceptions/BadRequestException.js';
 
 class ProjectService {
 
@@ -37,89 +38,51 @@ class ProjectService {
     return project;
   }
 
-  async getMyProjects(userId,workspaceId) {
+  async getMyProjects(userId, workspaceId, view) {
 
-    const memberships = await ProjectMemberRepository.findProjectsByUser(userId);
-    const projectIds = memberships.map(m => m.projectId);
+    if (view === 'my-projects') {
 
-    if (!projectIds.length) return[];
+      const memberships = await ProjectMemberRepository.findProjectsByUser(userId);
+      if (!memberships.length) return [];
 
-    const projects = await ProjectRepository.findByWorkspace(workspaceId,projectIds);
+      const projectIds = memberships.map(m => m.projectId);
+      const projects = await ProjectRepository.findByWorkspace(workspaceId, projectIds);
+      if (!projects.length) return [];
 
-    if(!projects.length) return[];
+      const projectMap = new Map(projects.map(p => [p.projectId, p]));
 
-    const projectMap = new Map(projects.map(p => [p.projectId, p]));
+      return memberships
+        .map(member => projectMap.get(member.projectId))
+        .filter(Boolean);
 
-    const parentProjects = [];
+    }else if(view === 'all-projects'){
 
-    memberships.forEach(member => {
+       return await ProjectRepository.findByWorkspace(workspaceId);
 
-      const project = projectMap.get(member.projectId);
+    }else{
 
-      if(project){
+      throw new BadRequestException('Invalid query value');
 
-        parentProjects.push({
-          ...project.toObject(),
-          isOwner: project.ownerId === userId,
-          membership: {
-            role: member.role,
-            addedBy: member.addedBy,
-            joinedAt: member.addedAt
-          }
-        });
+    }
 
-      }
-
-    });
-
-    return  parentProjects; 
   }
 
-  async getChildProjects(userId,parentProjectId){
 
-    const memberships = await ProjectMemberRepository.findProjectsByUser(userId);
-    const projectIds = memberships.map(m => m.projectId);
-
-    if (!projectIds.length) return[];
+  async getChildProjects(parentProjectId){
 
     const projects = await ProjectRepository.findByParentProject(parentProjectId);
 
     if(!projects.length) return[];
 
-    const projectMap = new Map(projects.map(p => [p.projectId, p]));
-
-    const childProjects = [];
-
-    memberships.forEach(member => {
-
-      const project = projectMap.get(member.projectId);
-
-      if(project){
-
-        childProjects.push({
-          ...project.toObject(),
-          isOwner: project.ownerId === userId,
-          membership: {
-            role: member.role,
-            addedBy: member.addedBy,
-            joinedAt: member.addedAt
-          }
-        });
-
-      }
-
-    });
-
-    return  childProjects;
+    return  projects;
 
   }
 
 
-  async updateProject(projectId, updates, userId) {
-
-    const membership = await ProjectMemberRepository.findByProjectAndUser(projectId, userId);
+  async updateProject(projectId, updates) {
 
     return await ProjectRepository.update(projectId, updates);
+
   }
 
   async deleteProject(dto){
@@ -127,13 +90,14 @@ class ProjectService {
     await ProjectRepository.delete(dto.projectId);
 
     return await ProjectMemberService.removeMember(dto.projectId,dto.userId);
+
   }
 
-  async getProjectDetails(userId,projectId){
+  async getProjectDetails(projectId){
 
     const projectDetails = await ProjectRepository.findById(projectId);
 
-    const projects = await this.getChildProjects(userId,projectId);
+    const projects = await this.getChildProjects(projectId);
     
     let childProjects = [];
 

@@ -25,7 +25,8 @@ class ProjectController {
   async getMyProjects(req, res, next) {
     try {
       const workspaceId = req.query.workspaceId;
-      const projects = await ProjectService.getMyProjects(req.user.userId,workspaceId);
+      const view = req.query.view;
+      const projects = await ProjectService.getMyProjects(req.user.userId,workspaceId,view);
       res.status(200).json({ projects });
     } catch (err) {
       next(err);
@@ -45,7 +46,7 @@ class ProjectController {
   async getChildProjects(req, res, next){
     try {
       const parentProjectId = req.params.parentProjectId;
-      const projects = await ProjectService.getChildProjects(req.user.userId,parentProjectId);
+      const projects = await ProjectService.getChildProjects(parentProjectId);
       res.status(200).json({ projects });
     } catch (err) {
       next(err);
@@ -57,8 +58,7 @@ class ProjectController {
       const dto = new UpdateProjectDTO(req.body);
       const updated = await ProjectService.updateProject(
         req.params.projectId,
-        dto,
-        req.user.userId
+        dto
       );
       res.status(200).json({ message: 'Project updated', project: updated });
     } catch (err) {

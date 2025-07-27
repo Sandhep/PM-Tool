@@ -43,7 +43,8 @@ class TaskController {
 
   async list(req, res, next) {
     try {
-      const tasks = await TaskService.listTasks(req.query.projectId,req.user.userId);
+      const view = req.query.view;
+      const tasks = await TaskService.listTasks(req.query.projectId,req.user.userId,view);
       res.status(200).json({ tasks });
     } catch (error) {
       next(error);
