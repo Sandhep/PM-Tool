@@ -1,8 +1,8 @@
 import express from 'express';
 import WorkspaceController from '../controllers/WorkspaceController.js';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
-import AccessControlMiddleware from '../middleware/AccessControlMiddleware.js';
 import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
+import WorkspaceAccessControlMiddleware from '../middleware/WorkspaceAccessControlMiddleware.js';
 
 const router = express.Router();
 
@@ -24,16 +24,14 @@ router.get(
 router.put(
   '/:workspaceId',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkWorkspaceAccess,
-  //AccessControlMiddleware.checkPermission('createProject', 'workspace'), // or custom permission
+  WorkspaceAccessControlMiddleware.checkAdminAccess,
   WorkspaceController.update
 );
 
 router.delete(
   '/:workspaceId',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkWorkspaceAccess,
- // AccessControlMiddleware.checkPermission('deleteProject', 'workspace'),
+  WorkspaceAccessControlMiddleware.checkAdminAccess,
   WorkspaceController.delete
 );
 
@@ -41,31 +39,28 @@ router.delete(
 router.get(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkWorkspaceAccess,
+  WorkspaceAccessControlMiddleware.checkMemberAccess,
   WorkspaceController.listMembers
 );
 
 router.post(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkWorkspaceAccess,
- // AccessControlMiddleware.checkPermission('addRemoveMembers', 'workspace'),
+  WorkspaceAccessControlMiddleware.checkAdminAccess,
   WorkspaceController.addMember
 );
 
 router.put(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
- // AccessControlMiddleware.checkWorkspaceAccess,
-  //AccessControlMiddleware.checkPermission('addRemoveMembers', 'workspace'),
+  WorkspaceAccessControlMiddleware.checkAdminAccess,
   WorkspaceController.updateMemberRole
 );
 
 router.delete(
   '/:workspaceId/members/:userId',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkWorkspaceAccess,
- // AccessControlMiddleware.checkPermission('addRemoveMembers', 'workspace'),
+  WorkspaceAccessControlMiddleware.checkAdminAccess,
   WorkspaceController.removeMember
 );
 
