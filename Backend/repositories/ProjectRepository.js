@@ -17,6 +17,11 @@ class ProjectRepository {
     return await Project.find({workspaceId,projectId:{$in:projectIds}});
   }
 
+  async findByWorkspace(workspaceId){
+    return await Project.find({workspaceId});
+  }
+
+
   async findByParentProject(parentProjectId){
     return await Project.find({parentProjectId});       
   }

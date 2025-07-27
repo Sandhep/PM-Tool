@@ -18,6 +18,10 @@ class TaskRepository {
     return Task.find({ projectId }).sort({ createdAt: -1 });
   }
 
+  async findbyParentTask(parentTaskId){
+    return Task.find({parentTaskId});
+  }
+
   async update(taskId, updateData) {
     return Task.findOneAndUpdate({ taskId }, updateData, { new: true });
   }
