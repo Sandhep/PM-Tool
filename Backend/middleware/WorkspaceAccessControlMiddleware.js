@@ -1,73 +1,39 @@
 import WorkspaceMemberRepository from '../repositories/WorkspaceMemberRepository.js';
+import WorkspaceRepository from '../repositories/WorkspaceRepository.js';
 import ForbiddenException from '../exceptions/ForbiddenException.js';
 import NotFoundException from '../exceptions/NotFoundException.js';
-import WorkspaceRepository from '../repositories/WorkspaceRepository.js';
 
 class WorkspaceAccessControlMiddleware {
 
   constructor(){
-    this.checkAdminAccess = this.checkAdminAccess.bind(this);
-    this.checkMemberAccess = this.checkMemberAccess.bind(this);
-  }  
+    this.checkRole = this.checkRole.bind(this);
+  }
 
-  async checkAccess(userId,workspaceId){
-
+  async getUserRole(userId, workspaceId) {
     const workspace = await WorkspaceRepository.findById(workspaceId);
+    if (!workspace) throw new NotFoundException('Workspace Not Found');
 
-    if(!workspace){
-       throw new NotFoundException('Workspace Not Found'); 
-    }
-     
-    const access = await WorkspaceMemberRepository.findByWorkspaceAndUser(workspaceId,userId);
-
-    if(!access){
-        return 'Non Member';
-    }
-
-    return access.role;
-
+    const membership = await WorkspaceMemberRepository.findByWorkspaceAndUser(workspaceId, userId);
+    return membership ? membership.role : null;
   }
 
-  async checkAdminAccess(req,res,next){
+  checkRole(requiredRoles = []) {
+    return async (req, res, next) => {
+      try {
+        const { userId } = req.user;
+        const workspaceId = req.params?.workspaceId || req.body?.workspaceId || req.query?.workspaceId;
 
-    try{
-        const userId = req.user.userId;
-        const workspaceId = req.params.workspaceId;
-
-        const access = await this.checkAccess(userId,workspaceId);
-
-        if(access === 'Admin'){
-           next();
-        }else{
-          throw new ForbiddenException('Requires Admin Access');
+        const role = await this.getUserRole(userId, workspaceId);
+        if (!role || !requiredRoles.includes(role)) {
+          throw new ForbiddenException(`Access Denied. Required roles for this action: ${requiredRoles.join(', ')}`);
         }
 
-    }catch(error){
-        next(error);
-    }
-   
+        next();
+      } catch (err) {
+        next(err);
+      }
+    };
   }
-
-  async checkMemberAccess(req,res,next){
-
-     try{
-        const userId = req.user.userId;
-        const workspaceId = req.params.workspaceId;
-
-        const access = await this.checkAccess(userId,workspaceId);
-
-        if(access === 'Member' || access === 'Admin'){
-           next();
-        }else{
-          throw new ForbiddenException('You don not have access to this workspace');
-        }
-
-    }catch(error){
-        next(error);
-    }
-
-  }
-
 }
 
 export default new WorkspaceAccessControlMiddleware();
