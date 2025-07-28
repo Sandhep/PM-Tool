@@ -2,10 +2,11 @@ import express from 'express';
 import WorkspaceController from '../controllers/WorkspaceController.js';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
-import WorkspaceAccessControlMiddleware from '../middleware/WorkspaceAccessControlMiddleware.js';
+import WorkspaceAccessControl from '../middleware/WorkspaceAccessControlMiddleware.js';
 
 const router = express.Router();
 
+// Content-Type enforcement
 router.use(contentTypeMiddleware.allow(['application/json']));
 
 // Workspace CRUD
@@ -24,14 +25,14 @@ router.get(
 router.put(
   '/:workspaceId',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControlMiddleware.checkAdminAccess,
+  WorkspaceAccessControl.checkRole(['Admin']),
   WorkspaceController.update
 );
 
 router.delete(
   '/:workspaceId',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControlMiddleware.checkAdminAccess,
+  WorkspaceAccessControl.checkRole(['Admin']),
   WorkspaceController.delete
 );
 
@@ -39,28 +40,28 @@ router.delete(
 router.get(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControlMiddleware.checkMemberAccess,
+  WorkspaceAccessControl.checkRole(['Admin', 'Member']),
   WorkspaceController.listMembers
 );
 
 router.post(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControlMiddleware.checkAdminAccess,
+  WorkspaceAccessControl.checkRole(['Admin']),
   WorkspaceController.addMember
 );
 
 router.put(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControlMiddleware.checkAdminAccess,
+  WorkspaceAccessControl.checkRole(['Admin']),
   WorkspaceController.updateMemberRole
 );
 
 router.delete(
   '/:workspaceId/members/:userId',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControlMiddleware.checkAdminAccess,
+  WorkspaceAccessControl.checkRole(['Admin']),
   WorkspaceController.removeMember
 );
 
