@@ -1,56 +1,54 @@
 import express from 'express';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import ProjectController from '../controllers/ProjectController.js';
-import AccessControlMiddleware from '../middleware/AccessControlMiddleware.js';
+import ProjectAccessControlMiddleware from '../middleware/ProjectAccessControlMiddleware.js';
+import WorkspaceAccessControlMiddleware from '../middleware/WorkspaceAccessControlMiddleware.js';
 import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
 
 const router = express.Router();
 
+// Content-Type enforcement
 router.use(contentTypeMiddleware.allow(['application/json']));
 
-// Create project - requires workspace-level access
 router.post(
   '/createProject',
   AuthMiddleware.authenticateToken,
- // AccessControlMiddleware.checkWorkspaceAccess,
- // AccessControlMiddleware.checkPermission('createProject', 'workspace'),
+  WorkspaceAccessControlMiddleware.checkRole(['Admin','Member']),
   ProjectController.create
 );
 
-// Get all user projects
 router.get(
   '/projectList',
   AuthMiddleware.authenticateToken,
+  WorkspaceAccessControlMiddleware.checkRole(['Admin','Member']),
   ProjectController.getMyProjects
 );
 
 router.get(
-  '/child/:parentProjectId',
+  '/child/:projectId',
   AuthMiddleware.authenticateToken,
+  ProjectAccessControlMiddleware.checkRole(['Admin','Manager','Collaborator','Viewer']),
   ProjectController.getChildProjects
 )
 
-// Update project - requires project-level write permission
 router.put(
   '/:projectId',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkProjectAccess,
-  //AccessControlMiddleware.checkPermission('createEditTask'), // OR another action based on context
+  ProjectAccessControlMiddleware.checkRole(['Admin','Manager']),
   ProjectController.updateProject
 );
 
-// Delete project - only if role is allowed (Workspace Owner / Admin / Project Manager)
 router.delete(
   '/:projectId',
   AuthMiddleware.authenticateToken,
- // AccessControlMiddleware.checkProjectAccess,
- // AccessControlMiddleware.checkPermission('deleteProject'),
+  ProjectAccessControlMiddleware.checkRole(['Admin']),
   ProjectController.deleteProject
 );
 
 router.get(
   '/:projectId',
   AuthMiddleware.authenticateToken,
+  ProjectAccessControlMiddleware.checkRole(['Admin','Manager','Collaborator','Viewer']),
   ProjectController.getProject
 )
 

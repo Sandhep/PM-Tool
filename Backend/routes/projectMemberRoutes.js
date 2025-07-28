@@ -1,43 +1,42 @@
 import express from 'express';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import ProjectMemberController from '../controllers/ProjectMemberController.js';
-import AccessControlMiddleware from '../middleware/AccessControlMiddleware.js';
+import ProjectAccessControlMiddleware from '../middleware/ProjectAccessControlMiddleware.js';
 import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
 
 const router = express.Router();
 
+// Content-Type enforcement
 router.use(contentTypeMiddleware.allow(['application/json']));
 
 router.post(
   '/:projectId',
   AuthMiddleware.authenticateToken,
+  ProjectAccessControlMiddleware.checkRole(['Admin','Manager']),
   ProjectMemberController.addUser
 );
 
-// View members — anyone with access to project can view
+
 router.get(
   '/:projectId',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkProjectAccess,
- // AccessControlMiddleware.checkPermission('viewTaskBoard'),
+  ProjectAccessControlMiddleware.checkRole(['Admin','Manager','Collaborator','Viewer']),
   ProjectMemberController.listMembers
 );
 
-// Update member role — only roles that can "add/remove members"
+
 router.put(
   '/:projectId',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkProjectAccess,
-  //AccessControlMiddleware.checkPermission('addRemoveMembers'),
+  ProjectAccessControlMiddleware.checkRole(['Admin','Manager']),
   ProjectMemberController.updateRole
 );
 
-// Remove member — only ProjectManager/Admin/WorkspaceOwner
+
 router.delete(
   '/:projectId/:userId',
   AuthMiddleware.authenticateToken,
-  //AccessControlMiddleware.checkProjectAccess,
- // AccessControlMiddleware.checkPermission('addRemoveMembers'),
+  ProjectAccessControlMiddleware.checkRole(['Admin','Manager']),
   ProjectMemberController.remove
 );
 
