@@ -36,7 +36,7 @@ class ProjectController {
   async getProject(req,res,next){
     try{
       const projectId = req.params.projectId;
-      const project = await ProjectService.getProjectDetails(req.user.userId,projectId);
+      const project = await ProjectService.getProjectDetails(projectId);
       res.status(200).json({project});
     }catch(err){
       next(err);
@@ -45,7 +45,7 @@ class ProjectController {
 
   async getChildProjects(req, res, next){
     try {
-      const parentProjectId = req.params.parentProjectId;
+      const parentProjectId = req.params.projectId;
       const projects = await ProjectService.getChildProjects(parentProjectId);
       res.status(200).json({ projects });
     } catch (err) {
