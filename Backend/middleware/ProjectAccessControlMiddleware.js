@@ -30,7 +30,7 @@ class ProjectAccessControlMiddleware {
     return async (req, res, next) => {
       try {
         const { userId } = req.user;
-        const { projectId } = req.params;
+        const projectId = req.params?.projectId || req.body?.projectId || req.query?.projectId;
 
         const role = await this.getUserRole(userId, projectId);
         if (!role){
