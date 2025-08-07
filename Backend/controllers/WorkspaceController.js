@@ -1,5 +1,6 @@
 import AddWorkspaceMemberDTO from '../dtos/AddWorkspaceMemberDTO.js';
 import CreateWorkspaceDTO from '../dtos/CreateWorkspaceDTO.js';
+import FilterWorkspacesDTO from '../dtos/FilterWorkspacesDTO.js';
 import UpdateWorkspaceDTO from '../dtos/UpdateWorkspaceDTO.js';
 import UpdateWorkspaceMemberDTO from '../dtos/UpdateWorkspaceMemberDTO.js';
 import WorkspaceService from '../services/WorkSpaceService.js';
@@ -15,6 +16,7 @@ class WorkspaceController {
      this.removeMember = this.removeMember.bind(this);
      this.update = this.update.bind(this);
      this.updateMemberRole = this.updateMemberRole.bind(this);
+     this.filterWorkspace = this.filterWorkspace.bind(this);
   }
 
   async create(req, res, next) {
@@ -95,6 +97,18 @@ class WorkspaceController {
       next(err);
     }
   }
+
+  async filterWorkspace(req,res,next){
+    try {
+      const userId = req.user.userId;
+      const dto = new FilterWorkspacesDTO({ ...req.body });
+      const result = await WorkspaceService.getFilteredWorkspace(userId, dto);
+      res.status(200).json(result);
+    } catch (error) {
+      next(error);
+    }
+  }
+
 }
 
 export default new WorkspaceController();

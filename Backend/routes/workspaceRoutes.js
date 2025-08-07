@@ -65,4 +65,10 @@ router.delete(
   WorkspaceController.removeMember
 );
 
+router.post(
+  '/view-workspace',
+  AuthMiddleware.authenticateToken,
+  WorkspaceController.filterWorkspace
+)
+
 export default router;

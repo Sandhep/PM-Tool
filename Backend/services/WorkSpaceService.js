@@ -15,6 +15,7 @@ class WorkspaceService {
     this.removeMember = this.removeMember.bind(this);
     this.updateMemberRole = this.updateMemberRole.bind(this);
     this.updateWorkspace = this.updateWorkspace.bind(this);
+    this.getFilteredWorkspace = this.getFilteredWorkspace.bind(this);
   }
 
   async createWorkspace(dto) {
@@ -41,6 +42,10 @@ class WorkspaceService {
 
   async getMyWorkspaces(userId) {
     return WorkspaceRepository.findByOwner(userId);
+  }
+
+  async getFilteredWorkspace(userId,filters){
+    return await WorkspaceRepository.findFilteredWorkspaces({userId,...filters});
   }
 
   async updateWorkspace(dto) {
