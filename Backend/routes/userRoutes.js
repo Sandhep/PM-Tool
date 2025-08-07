@@ -14,7 +14,7 @@ router.post(
     UserController.inviteUser
 );
 router.post('/accept-invite',UserController.acceptInvitation);
-router.post('/invitations', AuthMiddleware.authenticateToken, UserController.getSentInvitations);
+router.post('/view-invitations', AuthMiddleware.authenticateToken, UserController.getSentInvitations);
 router.delete('/invitation/:invitationId', AuthMiddleware.authenticateToken, UserController.removeInvitation);
 
 
