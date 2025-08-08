@@ -2,6 +2,7 @@ import ProjectService from '../services/ProjectService.js';
 import CreateProjectDTO from '../dtos/CreateProjectDTO.js';
 import UpdateProjectDTO from '../dtos/UpdateProjectDTO.js';
 import DeleteProjectDTO from '../dtos/DeleteProjectDTO.js';
+import FilterProjectDTO from '../dtos/FilterProjectDTO.js';
 
 class ProjectController {
 
@@ -25,8 +26,9 @@ class ProjectController {
   async getMyProjects(req, res, next) {
     try {
       const workspaceId = req.query.workspaceId;
-      const view = req.query.view;
-      const projects = await ProjectService.getMyProjects(req.user.userId,workspaceId,view);
+      const userId = req.user.userId;
+      const filter = new FilterProjectDTO({workspaceId,userId,...req.body});
+      const projects = await ProjectService.getFilteredProjects(filter);
       res.status(200).json({ projects });
     } catch (err) {
       next(err);

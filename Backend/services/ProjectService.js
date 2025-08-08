@@ -8,10 +8,10 @@ class ProjectService {
 
    constructor(){
     this.createProject = this.createProject.bind(this);
-    this.getMyProjects = this.getMyProjects.bind(this);
     this.deleteProject = this.deleteProject.bind(this);
     this.updateProject = this.updateProject.bind(this);
     this.getChildProjects = this.getChildProjects.bind(this);
+    this.getFilteredProjects = this.getFilteredProjects.bind(this);
   }
 
   async createProject(createProjectDTO) {
@@ -38,35 +38,9 @@ class ProjectService {
     return project;
   }
 
-  async getMyProjects(userId, workspaceId, view) {
-
-    if (view === 'my-projects') {
-
-      const memberships = await ProjectMemberRepository.findProjectsByUser(userId);
-      if (!memberships.length) return [];
-
-      const projectIds = memberships.map(m => m.projectId);
-      const projects = await ProjectRepository.findByWorkspace(workspaceId, projectIds);
-      if (!projects.length) return [];
-
-      const projectMap = new Map(projects.map(p => [p.projectId, p]));
-
-      return memberships
-        .map(member => projectMap.get(member.projectId))
-        .filter(Boolean);
-
-    }else if(view === 'all-projects'){
-
-       return await ProjectRepository.findByWorkspace(workspaceId);
-
-    }else{
-
-      throw new BadRequestException('Invalid query value');
-
-    }
-
+  async getFilteredProjects(filters) {
+    return await ProjectRepository.findFilteredProjects(filters);
   }
-
 
   async getChildProjects(parentProjectId){
 
