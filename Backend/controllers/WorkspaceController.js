@@ -101,7 +101,7 @@ class WorkspaceController {
   async filterWorkspace(req,res,next){
     try {
       const userId = req.user.userId;
-      const dto = new FilterWorkspacesDTO({ ...req.body });
+      const dto = new FilterWorkspacesDTO(req.body);
       const result = await WorkspaceService.getFilteredWorkspace(userId, dto);
       res.status(200).json(result);
     } catch (error) {

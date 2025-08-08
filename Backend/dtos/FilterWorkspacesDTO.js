@@ -1,4 +1,5 @@
 // /dtos/FilterInvitationsDTO.js
+import WorkspaceConstants from '../constants/WorkspaceConstants.js';
 import BadRequestException from '../exceptions/BadRequestException.js';
 
 export default class FilterWorkspacesDTO {
@@ -13,13 +14,13 @@ export default class FilterWorkspacesDTO {
       throw new BadRequestException('Limit must be between 1 and 100');
     }
 
-    if(data.membership && !['All','Owner','Admin','Member'].includes(data.membership)){
+    if(data.membership && !WorkspaceConstants.WORKSPACE_MEMBERSHIP_FILTER.includes(data.membership)){
       throw new BadRequestException('Invalid Membership');
     }
 
     this.page = parseInt(data.page) || 1;
     this.limit = parseInt(data.limit) || 10;
     this.membership = data.membership?.trim();
-    this.search = data.search || '';
+    this.search = data.search?.trim() || '';
   }
 }

@@ -1,3 +1,4 @@
+import ProjectConstants from '../constants/ProjectConstants.js';
 import BadRequestException from '../exceptions/BadRequestException.js';
 
 export default class UpdateProjectMemberDTO {
@@ -12,8 +13,8 @@ export default class UpdateProjectMemberDTO {
       throw new BadRequestException('projectId is required');
     }
 
-    if (!data.role || typeof data.role !== 'string') {
-      throw new BadRequestException('Role is required');
+    if (!data.role || typeof data.role !== 'string' && !ProjectConstants.PROJECT_READ_ACCESS.includes(data.role)) {
+      throw new BadRequestException('Role is invalid');
     }
 
     this.projectId = data.projectId;

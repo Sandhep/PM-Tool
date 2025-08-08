@@ -1,3 +1,4 @@
+import ProjectConstants from "../constants/ProjectConstants.js";
 import BadRequestException from "../exceptions/BadRequestException.js";
 
 export default class UpdateProjectDTO {
@@ -8,7 +9,7 @@ export default class UpdateProjectDTO {
       throw new BadRequestException('Project name is required and must be a string');
     }
     
-    if (data.status && !['Not Started', 'In Progress', 'Completed'].includes(data.status)) {
+    if (data.status && !ProjectConstants.PROJECT_STATUS.includes(data.status)) {
       throw new BadRequestException('Invalid project status');
     }
     

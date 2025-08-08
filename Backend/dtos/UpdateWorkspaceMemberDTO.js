@@ -1,3 +1,4 @@
+import WorkspaceConstants from '../constants/WorkspaceConstants.js';
 import BadRequestException from '../exceptions/BadRequestException.js';
 
 export default class UpdateWorkspaceMemberDTO {
@@ -12,8 +13,8 @@ export default class UpdateWorkspaceMemberDTO {
       throw new BadRequestException('workspaceId is required');
     }
 
-    if (!data.role || typeof data.role !== 'string') {
-      throw new BadRequestException('Role is required');
+    if (!data.role || typeof data.role !== 'string' && !WorkspaceConstants.WORKSPACE_READ_ACCESS.includes(data.role)) {
+      throw new BadRequestException('Role is invalid');
     }
 
     this.workspaceId = data.workspaceId;

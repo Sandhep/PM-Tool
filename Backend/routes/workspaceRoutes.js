@@ -3,6 +3,7 @@ import WorkspaceController from '../controllers/WorkspaceController.js';
 import AuthMiddleware from '../middleware/AuthMiddleware.js';
 import contentTypeMiddleware from '../middleware/ContentTypeMiddleware.js';
 import WorkspaceAccessControl from '../middleware/WorkspaceAccessControlMiddleware.js';
+import WorkspaceConstants from '../constants/WorkspaceConstants.js';
 
 const router = express.Router();
 
@@ -25,14 +26,14 @@ router.get(
 router.put(
   '/:workspaceId',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControl.checkRole(['Admin']),
+  WorkspaceAccessControl.checkRole(WorkspaceConstants.WORKSPACE_ADMIN_ACCESS),
   WorkspaceController.update
 );
 
 router.delete(
   '/:workspaceId',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControl.checkRole(['Admin']),
+  WorkspaceAccessControl.checkRole(WorkspaceConstants.WORKSPACE_ADMIN_ACCESS),
   WorkspaceController.delete
 );
 
@@ -40,34 +41,35 @@ router.delete(
 router.get(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControl.checkRole(['Admin', 'Member']),
+  WorkspaceAccessControl.checkRole(WorkspaceConstants.WORKSPACE_READ_ACCESS),
   WorkspaceController.listMembers
 );
 
 router.post(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControl.checkRole(['Admin']),
+  WorkspaceAccessControl.checkRole(WorkspaceConstants.WORKSPACE_ADMIN_ACCESS),
   WorkspaceController.addMember
 );
 
 router.put(
   '/:workspaceId/members',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControl.checkRole(['Admin']),
+  WorkspaceAccessControl.checkRole(WorkspaceConstants.WORKSPACE_ADMIN_ACCESS),
   WorkspaceController.updateMemberRole
 );
 
 router.delete(
   '/:workspaceId/members/:userId',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControl.checkRole(['Admin']),
+  WorkspaceAccessControl.checkRole(WorkspaceConstants.WORKSPACE_ADMIN_ACCESS),
   WorkspaceController.removeMember
 );
 
 router.post(
   '/view-workspace',
   AuthMiddleware.authenticateToken,
+  WorkspaceAccessControl.checkRole(WorkspaceConstants.WORKSPACE_READ_ACCESS),
   WorkspaceController.filterWorkspace
 )
 
