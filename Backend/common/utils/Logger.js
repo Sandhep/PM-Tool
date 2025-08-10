@@ -2,6 +2,8 @@ import winston from 'winston';
 import 'winston-daily-rotate-file';
 import { Logtail } from '@logtail/node';
 import { LogtailTransport } from '@logtail/winston';
+import dotenv from 'dotenv';
+dotenv.config();
 
 class Logger { 
   constructor() {
@@ -30,8 +32,10 @@ class Logger {
     ];
 
     // Better Stack Logtail (Cloud Logging)
-    if (process.env.LOGTAIL_SOURCE_TOKEN) {
-      const logtail = new Logtail(process.env.LOGTAIL_SOURCE_TOKEN);
+    if (process.env.CLOUD_LOGGING.match('Enable')) {
+      const logtail = new Logtail(process.env.LOGTAIL_SOURCE_TOKEN, {
+        endpoint: process.env.LOGTAIL_HOST
+      });
       transports.push(new LogtailTransport(logtail));
     }
 
