@@ -9,8 +9,8 @@ class TaskService {
     this.createTask = this.createTask.bind(this);
     this.updateTask = this.updateTask.bind(this);
     this.deleteTask = this.deleteTask.bind(this);
-    this.listTasks = this.listTasks.bind(this);
     this.fetchTask = this.fetchTask.bind(this);
+    this.getFilteredTasks = this.getFilteredTasks.bind(this);
   }
 
   async createTask(createTaskDTO) {
@@ -54,21 +54,7 @@ class TaskService {
 
   }
 
-  async listTasks(projectId,userId,view) {
-
-    const tasks =  await TaskRepository.findAllByProject(projectId);
-    
-    if(view === 'my-tasks'){
-      const userTasks = tasks.filter(task => task.assignerId === userId || task.assigneeId === userId);
-      return userTasks;
-    }else if(view === 'all-tasks'){
-      return tasks;
-    }else{
-      throw new BadRequestException('Invalid query value');
-    }
-
-  }
-
+ 
   async getFilteredTasks(userId,filters){
      return await TaskRepository.findFilteredTasks({userId,...filters});
   }

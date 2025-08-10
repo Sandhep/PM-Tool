@@ -17,13 +17,6 @@ router.post(
   TaskController.create
 );
 
-router.get(
-  '/', 
-  AuthMiddleware.authenticateToken,
-  ProjectAccessControlMiddleware.checkRole(TaskConstants.TASK_READ_ACCESS),
-  TaskController.list
-);
-
 router.post(
   '/view-tasks',
   AuthMiddleware.authenticateToken,

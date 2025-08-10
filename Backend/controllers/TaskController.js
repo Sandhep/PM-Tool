@@ -9,8 +9,8 @@ class TaskController {
       this.create = this.create.bind(this);
       this.update = this.update.bind(this);
       this.delete = this.delete.bind(this);
-      this.list = this.list.bind(this);
       this.fetch = this.fetch.bind(this);
+      this.viewTasks = this.viewTasks.bind(this);
    }
 
   async create(req, res, next) {
@@ -42,15 +42,6 @@ class TaskController {
     }
   }
 
-  async list(req, res, next) {
-    try {
-      const view = req.query.view;
-      const tasks = await TaskService.listTasks(req.query.projectId,req.user.userId,view);
-      res.status(200).json({ tasks });
-    } catch (error) {
-      next(error);
-    }
-  }
 
   async fetch(req,res,next){
     try{
