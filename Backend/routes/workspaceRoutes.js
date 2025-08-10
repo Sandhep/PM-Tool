@@ -69,7 +69,6 @@ router.delete(
 router.post(
   '/view-workspace',
   AuthMiddleware.authenticateToken,
-  WorkspaceAccessControl.checkRole(WorkspaceConstants.WORKSPACE_READ_ACCESS),
   WorkspaceController.filterWorkspace
 )
 
