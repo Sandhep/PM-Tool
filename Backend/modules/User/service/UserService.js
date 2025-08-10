@@ -7,6 +7,7 @@ import AuthService from '../../Authentication/service/AuthService.js';
 import ConflictException from '../../../common/exceptions/ConflictException.js';
 import WorkspaceMemberRepository from '../../Workspace/repository/WorkspaceMemberRepository.js';
 import WorkSpaceService from '../../Workspace/service/WorkSpaceService.js';
+import log from '../../../common/utils/Logger.js';
 
 class UserService{
 
@@ -38,6 +39,7 @@ class UserService{
           expiresAt,
         });
     
+        log.info('User invited');
         return invitation;
     }
     
@@ -69,10 +71,12 @@ class UserService{
     
         await InvitationRepository.updateStatus(acceptInviteDTO.token, 'Accepted');
     
+        log.info('Invite accepted');
         return user;
     }
 
     async getSentInvitations(userId, filters) {
+        log.info('fetched invitations');
         return await InvitationRepository.findFilteredInvitations({
           invitedBy: userId,
           ...filters
@@ -80,14 +84,13 @@ class UserService{
     }
 
     async removeInvitation(invitationId, invitedBy) {
+      log.info('deleted invite');
       const deleted = await InvitationRepository.deleteById(invitationId, invitedBy);
       if (!deleted) {
         throw new BadRequestException("Invalid or unauthorized invitation removal");
       }
       return { message: "Invitation removed successfully" };
     }
-
-
 
 }
 

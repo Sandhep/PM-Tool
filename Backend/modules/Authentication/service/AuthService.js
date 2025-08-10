@@ -8,6 +8,8 @@ import UserRepository from '../../User/repository/UserRepository.js';
 import BadRequestException from '../../../common/exceptions/BadRequestException.js';
 import NotFoundException from '../../../common/exceptions/NotFoundException.js';
 
+import log from '../../../common/utils/Logger.js';
+
 dotenv.config();
 
 class AuthService {
@@ -35,6 +37,7 @@ class AuthService {
     });
 
     await MailService.sendOnboardMail(registerUserDTO.email, registerUserDTO.name);
+    log.info(`New user registered : ${registerUserDTO.email}`)
     return newUser;
   }
 
@@ -42,13 +45,13 @@ class AuthService {
     const user = await UserRepository.findByEmail(loginUserDTO.email);
 
     if (!user) {
-      throw new NotFoundException("User Not Found");
+      throw new NotFoundException(`User Not Found :${loginUserDTO.email}`);
     }
 
     const isPasswordValid = await bcrypt.compare(loginUserDTO.password, user.passwordHash);
 
     if (!isPasswordValid) {
-      throw new BadRequestException("Invalid credentials");
+      throw new BadRequestException(`Invalid credentials for ${loginUserDTO.email}`);
     }
 
     const token = jwt.sign(
@@ -56,15 +59,17 @@ class AuthService {
       process.env.JWT_ACCESS_SECRET,
       { expiresIn: '7d' }
     );
-
+    
+    log.info(`User Logged In: ${loginUserDTO.email}`);
     return { message: 'Login successful', token };
   }
 
   async requestOtp({ email }) {
-
+ 
+    log.info(`User with email Id: ${email} requested for OTP`);
     const user = await UserRepository.findByEmail(email);
     if (!user) {
-      throw new NotFoundException("User not found");
+      throw new NotFoundException(`User Not Found :${email}`);
     }
 
     const otp = Math.floor(100000 + Math.random() * 900000).toString();
@@ -82,6 +87,8 @@ class AuthService {
 
   async resetPasswordWithOtp({ email, otp, password }) {
 
+    log.info(`User with email Id: ${email} requested for password reset`);
+
     const user = await UserRepository.findByEmail(email);
 
     if (!user || user.resetOtp !== otp || user.resetOtpExpiresAt < new Date()) {
@@ -95,6 +102,7 @@ class AuthService {
 
     await user.save();
 
+    log.info(`Password reset successful for ${email}`);
     return { message: "Password reset successful" };
   
   }

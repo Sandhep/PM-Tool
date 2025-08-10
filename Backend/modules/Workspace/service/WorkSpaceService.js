@@ -3,6 +3,7 @@ import WorkspaceMemberRepository from '../repository/WorkspaceMemberRepository.j
 import UserRepository from '../../User/repository/UserRepository.js';
 import NotFoundException from '../../../common/exceptions/NotFoundException.js';
 import ConflictException from '../../../common/exceptions/ConflictException.js';
+import log from '../../../common/utils/Logger.js';
 
 class WorkspaceService {
 
@@ -37,14 +38,17 @@ class WorkspaceService {
       addedBy: null,
     });
 
+    log.info(`Workspace created by user: ${ownerId}`);
     return workspace;
   }
 
   async getMyWorkspaces(userId) {
+    log.info(`User: ${userId} fetched workspace`);
     return WorkspaceRepository.findByOwner(userId);
   }
 
   async getFilteredWorkspace(userId,filters){
+    log.info(`User: ${userId} fetched workspace`);
     return await WorkspaceRepository.findFilteredWorkspaces({userId,...filters});
   }
 
@@ -58,6 +62,7 @@ class WorkspaceService {
       throw new NotFoundException('Workspace Not Found');
     }
 
+    log.info(`Workspace: ${workspaceId} updated`);
     return await WorkspaceRepository.update(dto);
   }
 
@@ -71,6 +76,7 @@ class WorkspaceService {
 
     await WorkspaceRepository.delete(workspaceId);
     await WorkspaceMemberRepository.removeAllMembers(workspaceId);
+    log.info(`workspace: ${workspaceId} is deleted`);
     return true;
   }
 
@@ -82,6 +88,8 @@ class WorkspaceService {
 
     const users = await UserRepository.findByUserIds(userIds);
     const userMap = new Map(users.map(u => [u.userId, u]));
+
+    log.info(`Fetched workspace: ${workspaceId} members`);
 
     return members.map(m => ({
       userId: m.userId,
@@ -106,6 +114,8 @@ class WorkspaceService {
     }
 
     member = WorkspaceMemberRepository.addMember({ workspaceId,userId,role,addedBy});
+
+    log.info(`Added User: ${userId} in workspace ${workspaceId}`);
     return member;
 
   }
@@ -119,11 +129,13 @@ class WorkspaceService {
     if (!updated) {
       throw new NotFoundException('Workspace member not found');
     }
-
+    
+    log.info(`Updated role for User: ${userId} in workspace ${workspaceId}`);
     return updated;
   }
 
   async removeMember(workspaceId, userId) {
+    log.info(`Removed User: ${userId} in workspace ${workspaceId}`);
     return WorkspaceMemberRepository.removeMember(workspaceId, userId);
   }
 }

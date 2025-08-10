@@ -2,6 +2,7 @@ import TaskRepository from '../repository/TaskRepository.js';
 import NotFoundException from '../../../common/exceptions/NotFoundException.js';
 import BadRequestException from '../../../common/exceptions/BadRequestException.js';
 import ProjectRepository from '../../Project/repository/ProjectRepository.js';
+import log from '../../../common/utils/Logger.js';
 
 class TaskService {
   
@@ -29,7 +30,7 @@ class TaskService {
     }
 
     const task = await TaskRepository.create(createTaskDTO);
-
+    log.info('Task Created');
     return task;
   }
 
@@ -43,6 +44,7 @@ class TaskService {
       throw new BadRequestException("A task cannot depend on itself");
     }
 
+    log.info('Task updated');
     return TaskRepository.update(taskId, updateTaskDTO);
   }
 
@@ -50,12 +52,14 @@ class TaskService {
 
     const task = await TaskRepository.findById(taskId);
     if (!task) throw new NotFoundException("Task not found");
+    log.info('Task deleted');
     return TaskRepository.delete(taskId);
 
   }
 
  
   async getFilteredTasks(userId,filters){
+     log.info('Fetched task list');
      return await TaskRepository.findFilteredTasks({userId,...filters});
   }
 
@@ -102,7 +106,8 @@ class TaskService {
       updatedAt: task.updatedAt,
       childTasks,
     }
-
+  
+    log.info('Fetched task details');
     return response;
   }
   

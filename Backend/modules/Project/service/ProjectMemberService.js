@@ -3,6 +3,7 @@ import NotFoundException from '../../../common/exceptions/NotFoundException.js';
 import UserRepository from '../../User/repository/UserRepository.js';
 import ConflictException from '../../../common/exceptions/ConflictException.js';
 import ProjectRepository from '../repository/ProjectRepository.js';
+import log from '../../../common/utils/Logger.js';
 
 class ProjectMemberService {
 
@@ -48,6 +49,8 @@ class ProjectMemberService {
         };
       });
 
+      log.info(`Fetched Project members for Project: ${projectId}`);
+
       return {
         members: {
           projectId,
@@ -66,6 +69,9 @@ class ProjectMemberService {
     if (!member) {
       throw new NotFoundException('Project member not found');
     }
+
+    log.info(`Role updated for user: ${userId} in project: ${projectId}`);
+
     return member;
   }
 
@@ -85,9 +91,14 @@ class ProjectMemberService {
           role: role,
           addedBy: addedBy,
         });
+
+    log.info(`User :${userId} added in project: ${projectId}`);    
   }
 
   async removeMember(projectId, userId) {
+
+    log.info(`User :${userId} removed from project: ${projectId}`); 
+
     return ProjectMemberRepository.removeMember(projectId, userId);
   }
 

@@ -4,6 +4,7 @@ import UserRepository from '../../User/repository/UserRepository.js';
 import InternalServerException from '../../../common/exceptions/InternalServerException.js';
 import NotFoundException from '../../../common/exceptions/NotFoundException.js';
 import BadRequestException from '../../../common/exceptions/BadRequestException.js';
+import log from '../../../common/utils/Logger.js';
 
 class MailService{
 
@@ -36,6 +37,7 @@ class MailService{
 
       const info = await transporter.sendMail(mailOptions);
 
+      log.info(`Mail sent to: ${mailObject.receiverEmail}`);
       return info;
 
     } catch (error) {
@@ -76,6 +78,7 @@ class MailService{
       </div>
     `;
 
+    log.info(`Initiated Onboard Mail`);
     await this.sendEmail({ receiverEmail, subject, message });
   }
 
@@ -130,6 +133,7 @@ class MailService{
         message
     };
 
+    log.info(`Initiated Invite Mail`);
     this.sendEmail(mailObject);
 
   }
@@ -167,6 +171,7 @@ class MailService{
         message
       };
 
+      log.info(`Initiated OTP Mail`);
       this.sendEmail(mailObject);
 
   }

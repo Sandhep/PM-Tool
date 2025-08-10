@@ -1,6 +1,7 @@
 import ProjectRepository from '../repository/ProjectRepository.js';
 import ProjectMemberRepository from '../repository/ProjectMemberRepository.js';
 import ProjectMemberService from '../service/ProjectMemberService.js';
+import log from '../../../common/utils/Logger.js';
 
 class ProjectService {
 
@@ -33,10 +34,13 @@ class ProjectService {
       addedBy: null,
     });
 
+    log.info('Project created');
+
     return project;
   }
 
   async getFilteredProjects(filters) {
+    log.info('Fetched project lists');
     return await ProjectRepository.findFilteredProjects(filters);
   }
 
@@ -46,6 +50,7 @@ class ProjectService {
 
     if(!projects.length) return[];
 
+    log.info('Fetched child projects');
     return  projects;
 
   }
@@ -53,6 +58,7 @@ class ProjectService {
 
   async updateProject(projectId, updates) {
 
+    log.info('Project updated');
     return await ProjectRepository.update(projectId, updates);
 
   }
@@ -60,7 +66,7 @@ class ProjectService {
   async deleteProject(dto){
 
     await ProjectRepository.delete(dto.projectId);
-
+    log.info('Project deleted');
     return await ProjectMemberService.removeMember(dto.projectId,dto.userId);
 
   }
@@ -93,6 +99,7 @@ class ProjectService {
         }  
       }
 
+    log.info('Fetched project details');
     return response;
 
   }
