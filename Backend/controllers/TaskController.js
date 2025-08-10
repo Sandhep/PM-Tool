@@ -1,6 +1,7 @@
 import TaskService from '../services/TaskService.js';
 import CreateTaskDTO from '../dtos/CreateTaskDTO.js';
 import UpdateTaskDTO from '../dtos/UpdateTaskDTO.js';
+import FilterTaskDTO from '../dtos/FilterTaskDTO.js';
 
 class TaskController {
 
@@ -56,6 +57,16 @@ class TaskController {
       const task = await TaskService.fetchTask(req.params.taskId);
       res.status(200).json({task});
     } catch(error){
+      next(error);
+    }
+  }
+
+  async viewTasks(req,res,next){
+    try{
+      const filters = new FilterTaskDTO(req.body);
+      const tasks = await TaskService.getFilteredTasks(req.user.userId,filters);
+      res.status(200).json(tasks);
+    }catch(error){
       next(error);
     }
   }

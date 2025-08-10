@@ -69,6 +69,10 @@ class TaskService {
 
   }
 
+  async getFilteredTasks(userId,filters){
+     return await TaskRepository.findFilteredTasks({userId,...filters});
+  }
+
   async fetchTask(taskId){
 
     const task = await TaskRepository.findById(taskId);
