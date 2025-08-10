@@ -86,12 +86,14 @@ class ProjectService {
     });
 
     const response = {
-       name:projectDetails.name,
-       description:projectDetails.description,
-       status:projectDetails.status,
-       visibility:projectDetails.visibility,
-       childProjects
-    }
+       project:{
+          name:projectDetails.name,
+          description:projectDetails.description,
+          status:projectDetails.status,
+          visibility:projectDetails.visibility,
+          childProjects
+        }  
+      }
 
     return response;
 
