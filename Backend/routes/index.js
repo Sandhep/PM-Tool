@@ -1,6 +1,7 @@
 import fs from 'fs/promises';
 import path from 'path';
 import { fileURLToPath, pathToFileURL } from 'url';
+import log from '../common/utils/Logger.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -13,10 +14,12 @@ export const loadRoutes = async (app) => {
     modules = await fs.readdir(modulesPath);
   } catch {
     console.warn(`⚠ No modules directory found at ${modulesPath}`);
+    log.warn(`⚠ No modules directory found at ${modulesPath}`);
     return;
   }
 
   console.log(`📦 Found modules: ${modules.join(', ')}`);
+  log.info(`Found modules: ${modules.join(', ')}`);
 
   for (const moduleName of modules) {
     const apiPath = path.join(modulesPath, moduleName, 'api');
@@ -34,6 +37,7 @@ export const loadRoutes = async (app) => {
             routeModule.basePath || `/${moduleName.toLowerCase()}`;
 
           console.log(`✅ Loaded route: ${routeBase} -> ${file}`);
+          log.info(`Loaded route: ${routeBase} -> ${file}`);
           app.use(routeBase, routeModule.default);
         }
       }

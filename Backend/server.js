@@ -6,6 +6,7 @@ import { loadRoutes } from './routes/index.js';
 import errorHandler from './common/middleware/errorHandler.js';
 import apiRateLimiter from './common/middleware/rateLimiter.js';
 import connectDB from './common/config/database.js';
+import log from './common/utils/Logger.js';
 
 dotenv.config();
 
@@ -33,8 +34,10 @@ const startServer = async () => {
     app.listen(PORT, () =>
       console.log(`🚀 Server running on port ${PORT}`)
     );
+    log.info('Server started successfully');
   } catch (err) {
     console.error('❌ Failed to start server:', err);
+    log.error(`Failed to start server: ${err}`);
     process.exit(1);
   }
 };
@@ -42,12 +45,14 @@ const startServer = async () => {
 // Graceful shutdown
 process.on('SIGTERM', async () => {
   console.log('SIGTERM received: closing MongoDB connection');
+  log.info('SIGTERM received: closing MongoDB connection');
   await mongoose.connection.close();
   process.exit(0);
 });
 
 process.on('SIGINT', async () => {
   console.log('SIGINT received: closing MongoDB connection');
+  log.info('SIGINT received: closing MongoDB connection');
   await mongoose.connection.close();
   process.exit(0);
 });
