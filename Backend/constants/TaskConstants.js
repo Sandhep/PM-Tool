@@ -2,7 +2,7 @@ class TaskConstants{
 
     TASK_STATUS = ['Not Started', 'In Progress', 'Completed'];
     TASK_PRIORITY = ['Low', 'Medium', 'High'];
-    TASK_MEMBERSHIP_FILTER = ['Assigner','Assignee'];
+    TASK_MEMBERSHIP_FILTER = ['AssignedByMe','AssignedToMe'];
 
     TASK_CREATE_ACCESS = ['Admin','Manager','Collaborator']; // Roles assigned at Project Level
     TASK_READ_ACCESS   = ['Admin','Manager','Collaborator','Viewer']; // Roles assigned at Project Level

@@ -61,7 +61,7 @@ class TaskRepository {
     let tasks;
     let total;
   
-    if (membership === 'Assigner') {
+    if (membership === 'AssignedByMe') {
 
       // Filter by assigner
       taskFilter.assignerId = userId;
@@ -74,7 +74,7 @@ class TaskRepository {
         Task.countDocuments(taskFilter)
       ]);
 
-    }else if(membership === 'Assignee') {
+    }else if(membership === 'AssignedToMe') {
 
       // Filter by assignee
       taskFilter.assignee = userId;

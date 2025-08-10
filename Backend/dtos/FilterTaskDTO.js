@@ -18,7 +18,7 @@ export default class FilterTaskDTO {
     }
 
     if(data.membership && !TaskConstants.TASK_MEMBERSHIP_FILTER.includes(data.membership)){
-      throw new BadRequestException('Invalid Membership');
+      throw new BadRequestException('Invalid Membership Filter');
     }
 
     if(data.status && !TaskConstants.TASK_STATUS.includes(data.status)){
