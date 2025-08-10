@@ -1,4 +1,3 @@
-// dtos/InviteUserDTO.js
 import BadRequestException from "../exceptions/BadRequestException.js";
 import Utils from "../utils/Utils.js";
 

@@ -1,4 +1,3 @@
-// /dtos/FilterInvitationsDTO.js
 import WorkspaceConstants from '../constants/WorkspaceConstants.js';
 import BadRequestException from '../exceptions/BadRequestException.js';
 
