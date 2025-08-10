@@ -29,7 +29,7 @@ class ProjectController {
       const userId = req.user.userId;
       const filter = new FilterProjectDTO({workspaceId,userId,...req.body});
       const projects = await ProjectService.getFilteredProjects(filter);
-      res.status(200).json({ projects });
+      res.status(200).json(projects);
     } catch (err) {
       next(err);
     }
@@ -39,7 +39,7 @@ class ProjectController {
     try{
       const projectId = req.params.projectId;
       const project = await ProjectService.getProjectDetails(projectId);
-      res.status(200).json({project});
+      res.status(200).json(project);
     }catch(err){
       next(err);
     }
