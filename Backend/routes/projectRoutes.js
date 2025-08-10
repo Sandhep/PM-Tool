@@ -36,14 +36,14 @@ router.get(
 router.put(
   '/:projectId',
   AuthMiddleware.authenticateToken,
-  ProjectAccessControlMiddleware.checkRole(ProjectConstants.PROJECT_WRITE_ACCESS),
+  ProjectAccessControlMiddleware.checkRole(ProjectConstants.PROJECT_UPDATE_ACCESS),
   ProjectController.updateProject
 );
 
 router.delete(
   '/:projectId',
   AuthMiddleware.authenticateToken,
-  ProjectAccessControlMiddleware.checkRole(ProjectConstants.PROJECT_ADMIN_ACCESS),
+  ProjectAccessControlMiddleware.checkRole(ProjectConstants.PROJECT_DELETE_ACCESS),
   ProjectController.deleteProject
 );
 
