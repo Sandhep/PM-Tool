@@ -36,8 +36,6 @@ export const loadRoutes = async (app) => {
           const routeBase =
             routeModule.basePath || `/${moduleName.toLowerCase()}`;
 
-          console.log(`✅ Loaded route: ${routeBase} -> ${file}`);
-          log.info(`Loaded route: ${routeBase} -> ${file}`);
           app.use(routeBase, routeModule.default);
         }
       }
