@@ -3,6 +3,7 @@ import NotFoundException from '../../../common/exceptions/NotFoundException.js';
 import BadRequestException from '../../../common/exceptions/BadRequestException.js';
 import ProjectRepository from '../../Project/repository/ProjectRepository.js';
 import log from '../../../common/utils/Logger.js';
+import ConflictException from '../../../common/exceptions/ConflictException.js';
 
 class TaskService {
   
@@ -29,7 +30,13 @@ class TaskService {
       throw new NotFoundException("Project Not Found");
     }
 
-    const task = await TaskRepository.create(createTaskDTO);
+    let task = await TaskRepository.findByNameAndProject(createTaskDTO.name, createTaskDTO.projectId);
+
+    if(task) {
+      throw new ConflictException("Task with this name already exists in the project");   
+    }
+
+    task = await TaskRepository.create(createTaskDTO);
     log.info('Task Created');
     return task;
   }

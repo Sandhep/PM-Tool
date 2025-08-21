@@ -2,6 +2,7 @@ import ProjectRepository from '../repository/ProjectRepository.js';
 import ProjectMemberRepository from '../repository/ProjectMemberRepository.js';
 import ProjectMemberService from '../service/ProjectMemberService.js';
 import log from '../../../common/utils/Logger.js';
+import ConflictException from '../../../common/exceptions/ConflictException.js';
 
 class ProjectService {
 
@@ -17,7 +18,13 @@ class ProjectService {
     
     const { name, description, ownerId, parentProjectId, workspaceId, visibility } = createProjectDTO;
 
-    const project = await ProjectRepository.create({
+    let project = await ProjectRepository.findByNameAndWorkspace(name, workspaceId);
+
+    if (project) {
+      throw new ConflictException('Project with this name already exists in the workspace');
+    }
+
+    project = await ProjectRepository.create({
       name,
       description,
       ownerId,
