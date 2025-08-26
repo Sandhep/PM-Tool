@@ -1,8 +1,10 @@
 import ProjectService from '../service/ProjectService.js';
+import ActivityLogService from '../../ActivityLog/service/ActivityLogService.js';
 import CreateProjectDTO from '../dto/CreateProjectDTO.js';
 import UpdateProjectDTO from '../dto/UpdateProjectDTO.js';
 import DeleteProjectDTO from '../dto/DeleteProjectDTO.js';
 import FilterProjectDTO from '../dto/FilterProjectDTO.js';
+import ActivityLogConstants from '../../../common/constants/ActivityLogConstants.js';
 
 class ProjectController {
 
@@ -17,6 +19,13 @@ class ProjectController {
     try {
       const dto = new CreateProjectDTO({ ...req.body, ownerId: req.user.userId });
       const project = await ProjectService.createProject(dto);
+      ActivityLogService.recordActivity({
+            resourceType: ActivityLogConstants.RESOURCE_TYPE.PROJECT,
+            resourceId: project.projectId,
+            actionType: ActivityLogConstants.ACTION_TYPE.CREATED,
+            description: "Project created",
+            initiatedBy: req.user.userId,
+      })
       res.status(201).json({ message: 'Project created', project });
     } catch (err) {
       next(err);
@@ -62,6 +71,13 @@ class ProjectController {
         req.params.projectId,
         dto
       );
+      ActivityLogService.recordActivity({
+            resourceType: ActivityLogConstants.RESOURCE_TYPE.PROJECT,
+            resourceId: req.params.projectId,
+            actionType: ActivityLogConstants.ACTION_TYPE.UPDATED,
+            description: "Project created",
+            initiatedBy: req.user.userId,
+      });
       res.status(200).json({ message: 'Project updated', project: updated });
     } catch (err) {
       next(err);
@@ -73,6 +89,13 @@ class ProjectController {
     try {
       const dto = new DeleteProjectDTO({...req.params,userId: req.user.userId});
       await ProjectService.deleteProject(dto);
+      ActivityLogService.recordActivity({
+            resourceType: ActivityLogConstants.RESOURCE_TYPE.PROJECT,
+            resourceId: dto.projectId,
+            actionType: ActivityLogConstants.ACTION_TYPE.DELETED,
+            description: "Project created",
+            initiatedBy: dto.userId,
+      })
       res.status(200).json({ message: 'Project Deleted'});
     } catch (err) {
       next(err);
