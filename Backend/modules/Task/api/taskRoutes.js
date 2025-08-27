@@ -38,6 +38,13 @@ router.put(
   TaskController.update
 );
 
+router.put(
+  '/:taskId/assignee',
+  AuthMiddleware.authenticateToken,
+  TaskAccessControlMiddleware.checkRole(TaskConstants.TASK_ASSIGNER_ACCESS),
+  TaskController.updateTaskAssignee
+)
+
 router.delete(
   '/:taskId',
   AuthMiddleware.authenticateToken,

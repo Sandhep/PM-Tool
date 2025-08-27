@@ -7,6 +7,7 @@ class TaskConstants{
     TASK_CREATE_ACCESS = ['Admin','Manager','Collaborator']; // Roles assigned at Project Level
     TASK_READ_ACCESS   = ['Admin','Manager','Collaborator','Viewer','Assigner','Assignee']; // Roles assigned at Project Level and Task Level
     TASK_UPDATE_ACCESS = ['Admin','Manager','Assigner','Assignee']; // Roles assigned at Project Level and Task Level
+    TASK_ASSIGNER_ACCESS = ['Admin','Manager','Assigner']; 
     TASK_DELETE_ACCESS = ['Admin','Manager','Assigner']; // Roles assigned at Project Level and Task Level
 }
 

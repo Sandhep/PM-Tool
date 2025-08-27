@@ -4,6 +4,7 @@ import BadRequestException from '../../../common/exceptions/BadRequestException.
 import ProjectRepository from '../../Project/repository/ProjectRepository.js';
 import log from '../../../common/utils/Logger.js';
 import ConflictException from '../../../common/exceptions/ConflictException.js';
+import UserRepository from '../../User/repository/UserRepository.js';
 
 class TaskService {
   
@@ -50,9 +51,30 @@ class TaskService {
     if (updateTaskDTO.dependentTaskId && updateTaskDTO.dependentTaskId === taskId) {
       throw new BadRequestException("A task cannot depend on itself");
     }
-
+    const task = await TaskRepository.update(taskId, updateTaskDTO);
     log.info('Task updated');
-    return TaskRepository.update(taskId, updateTaskDTO);
+    return task;
+  }
+
+  async updateTaskAssignee(taskId,assigneeId){
+
+    const existingTask = await TaskRepository.findById(taskId);
+    if (!existingTask) throw new NotFoundException("Task not found");
+
+    if(assigneeId){
+      const user = await UserRepository.findByUserId(assigneeId);
+      if(!user){
+         throw new BadRequestException('Invalid assigneeId')
+      }
+    }else{
+      throw new BadRequestException('Requires assigneeId');
+    }
+    
+    const task = await TaskRepository.update(taskId,{assigneeId});
+
+    log.info('Task Assignee Updated');
+
+    return task;
   }
 
   async deleteTask(taskId) {
